@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import Event, Predictor, Round, Season, Tournament
+from .models import (
+    Event, PredictedRound, Predictor, Round, Season, Tournament
+)
 
 
 class SeasonAdmin(admin.ModelAdmin):
@@ -60,3 +62,14 @@ class PredictorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Predictor, PredictorAdmin)
+
+
+class PredictedRoundAdmin(admin.ModelAdmin):
+    list_display = ("__str__", )
+    fields = (
+        "predictor", "round", "total_points", "created_at", "modified_at"
+    )
+    readonly_fields = ("total_points", "created_at", "modified_at")
+
+
+admin.site.register(PredictedRound, PredictedRoundAdmin)

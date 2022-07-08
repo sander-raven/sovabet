@@ -89,3 +89,28 @@ class Predictor(models.Model):
     
     def __str__(self) -> str:
         return self.name
+
+
+class PredictedRound(models.Model):
+    predictor = models.ForeignKey(
+        Predictor,
+        on_delete=models.CASCADE,
+        related_name="predicted_rounds",
+        verbose_name="прогнозист",
+    )
+    round = models.ForeignKey(
+        Round,
+        on_delete=models.CASCADE,
+        related_name="predicted_rounds",
+        verbose_name="раунд",
+    )
+    total_points = models.FloatField("сумма баллов", default=0.0)
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+    modified_at = models.DateTimeField("изменён", auto_now=True)
+
+    class Meta:
+        verbose_name = "прогнозируемый раунд"
+        verbose_name_plural = "прогнозируемые раунды"
+    
+    def __str__(self) -> str:
+        return f"Прогноз {self.predictor} для {self.round}"
