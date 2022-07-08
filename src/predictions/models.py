@@ -5,6 +5,8 @@ class Season(models.Model):
     title = models.CharField("заголовок", max_length=50, unique=True)
     info = models.TextField("информация", blank=True)
     is_active = models.BooleanField("действующий?", default=True)
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+    modified_at = models.DateTimeField("изменён", auto_now=True)
 
     class Meta:
         verbose_name = "сезон"
@@ -18,6 +20,8 @@ class Tournament(models.Model):
     title = models.CharField("заголовок", max_length=50, unique=True)
     info = models.TextField("информация", blank=True)
     is_active = models.BooleanField("действующий?", default=True)
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+    modified_at = models.DateTimeField("изменён", auto_now=True)
     season = models.ForeignKey(
         Season,
         on_delete=models.PROTECT,
@@ -36,6 +40,8 @@ class Tournament(models.Model):
 class Round(models.Model):
     title = models.CharField("заголовок", max_length=50)
     info = models.TextField("информация", blank=True)
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+    modified_at = models.DateTimeField("изменён", auto_now=True)
     tournament = models.ForeignKey(
         Tournament,
         on_delete=models.PROTECT,
@@ -54,6 +60,8 @@ class Round(models.Model):
 class Event(models.Model):
     description = models.CharField("описание", max_length=100)
     result = models.CharField("результат", max_length=100, blank=True)
+    created_at = models.DateTimeField("создано", auto_now_add=True)
+    modified_at = models.DateTimeField("изменено", auto_now=True)
     round = models.ForeignKey(
         Round,
         on_delete=models.PROTECT,
