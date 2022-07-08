@@ -49,3 +49,21 @@ class Round(models.Model):
     
     def __str__(self) -> str:
         return f"{self.title} :: {self.tournament}"
+
+
+class Event(models.Model):
+    description = models.CharField("описание", max_length=100)
+    result = models.CharField("результат", max_length=100, blank=True)
+    round = models.ForeignKey(
+        Round,
+        on_delete=models.PROTECT,
+        related_name="events",
+        verbose_name="раунд",
+    )
+
+    class Meta:
+        verbose_name = "событие"
+        verbose_name_plural = "события"
+    
+    def __str__(self) -> str:
+        return f"{self.description} >> {self.result}"
