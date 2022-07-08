@@ -31,3 +31,21 @@ class Tournament(models.Model):
     
     def __str__(self) -> str:
         return self.title
+
+
+class Round(models.Model):
+    title = models.CharField("заголовок", max_length=50)
+    info = models.TextField("информация", blank=True)
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.PROTECT,
+        related_name="rounds",
+        verbose_name="турнир",
+    )
+
+    class Meta:
+        verbose_name = "раунд"
+        verbose_name_plural = "раунды"
+    
+    def __str__(self) -> str:
+        return f"{self.title} :: {self.tournament}"

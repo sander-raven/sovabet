@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Season, Tournament
+from .models import Round, Season, Tournament
 
 
 class SeasonAdmin(admin.ModelAdmin):
@@ -19,3 +19,12 @@ class TournamentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tournament, TournamentAdmin)
+
+
+class RoundAdmin(admin.ModelAdmin):
+    list_display = ("__str__", )
+    search_fields = ("title", "info", "tournament__title", "tournament__info")
+    fields = ("title", "info", "tournament")
+
+
+admin.site.register(Round, RoundAdmin)
