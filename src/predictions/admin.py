@@ -10,6 +10,7 @@ admin.site.site_title = "SOVABET"
 admin.site.index_title = "Администрирование SOVABET"
 
 
+@admin.register(Season)
 class SeasonAdmin(admin.ModelAdmin):
     list_display = ("__str__", "is_active")
     search_fields = ("title", "info")
@@ -17,9 +18,7 @@ class SeasonAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
 
 
-admin.site.register(Season, SeasonAdmin)
-
-
+@admin.register(Tournament)
 class TournamentAdmin(admin.ModelAdmin):
     list_display = ("__str__", "season", "is_active")
     search_fields = ("title", "info", "season__title", "season__info")
@@ -29,15 +28,13 @@ class TournamentAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
 
 
-admin.site.register(Tournament, TournamentAdmin)
-
-
 class EventInline(admin.TabularInline):
     model = Event
     extra = 4
     max_num = 4
 
 
+@admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
     list_display = ("__str__", )
     search_fields = ("title", "info", "tournament__title", "tournament__info")
@@ -46,9 +43,7 @@ class RoundAdmin(admin.ModelAdmin):
     inlines = (EventInline, )
 
 
-admin.site.register(Round, RoundAdmin)
-
-
+@admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ("__str__", "round")
     search_fields = ("description", "result")
@@ -56,9 +51,7 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
 
 
-admin.site.register(Event, EventAdmin)
-
-
+@admin.register(Predictor)
 class PredictorAdmin(admin.ModelAdmin):
     list_display = ("__str__", "id", "vk_id")
     search_fields = ("name", )
@@ -66,15 +59,10 @@ class PredictorAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
 
 
-admin.site.register(Predictor, PredictorAdmin)
-
-
+@admin.register(PredictedRound)
 class PredictedRoundAdmin(admin.ModelAdmin):
     list_display = ("__str__", )
     fields = (
         "predictor", "round", "total_points", "created_at", "modified_at"
     )
     readonly_fields = ("total_points", "created_at", "modified_at")
-
-
-admin.site.register(PredictedRound, PredictedRoundAdmin)
