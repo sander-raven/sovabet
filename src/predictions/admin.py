@@ -5,6 +5,11 @@ from .models import (
 )
 
 
+admin.site.site_header = "Административный сайт SOVABET"
+admin.site.site_title = "SOVABET"
+admin.site.index_title = "Администрирование SOVABET"
+
+
 class SeasonAdmin(admin.ModelAdmin):
     list_display = ("__str__", "is_active")
     search_fields = ("title", "info")
