@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, Round, Season, Tournament
+from .models import Event, Predictor, Round, Season, Tournament
 
 
 class SeasonAdmin(admin.ModelAdmin):
@@ -44,3 +44,13 @@ class EventAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Event, EventAdmin)
+
+
+class PredictorAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "id", "vk_id")
+    search_fields = ("name", )
+    fields = ("name", "vk_id", "created_at", "modified_at")
+    readonly_fields = ("created_at", "modified_at")
+
+
+admin.site.register(Predictor, PredictorAdmin)

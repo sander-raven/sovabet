@@ -67,3 +67,17 @@ class Event(models.Model):
     
     def __str__(self) -> str:
         return f"{self.description} >> {self.result}"
+
+
+class Predictor(models.Model):
+    name = models.CharField("имя", max_length=50)
+    vk_id = models.CharField("VK ID", max_length=100, blank=True)
+    created_at = models.DateTimeField("создан", auto_now_add=True)
+    modified_at = models.DateTimeField("изменён", auto_now=True)
+
+    class Meta:
+        verbose_name = "прогнозист"
+        verbose_name_plural = "прогнозисты"
+    
+    def __str__(self) -> str:
+        return self.name
