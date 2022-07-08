@@ -21,10 +21,17 @@ class TournamentAdmin(admin.ModelAdmin):
 admin.site.register(Tournament, TournamentAdmin)
 
 
+class EventInline(admin.TabularInline):
+    model = Event
+    extra = 4
+    max_num = 4
+
+
 class RoundAdmin(admin.ModelAdmin):
     list_display = ("__str__", )
     search_fields = ("title", "info", "tournament__title", "tournament__info")
     fields = ("title", "info", "tournament")
+    inlines = (EventInline, )
 
 
 admin.site.register(Round, RoundAdmin)
