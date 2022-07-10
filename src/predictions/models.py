@@ -114,3 +114,23 @@ class PredictedRound(models.Model):
     
     def __str__(self) -> str:
         return f"Прогноз {self.predictor} для {self.round}"
+
+
+class PredictedEvent(models.Model):
+    description = models.CharField("описание", max_length=100)
+    result = models.CharField("результат", max_length=100, blank=True)
+    created_at = models.DateTimeField("создано", auto_now_add=True)
+    modified_at = models.DateTimeField("изменено", auto_now=True)
+    predicted_round = models.ForeignKey(
+        PredictedRound,
+        on_delete=models.CASCADE,
+        related_name="predicted_events",
+        verbose_name="прогнозируемый раунд",
+    )
+
+    class Meta:
+        verbose_name = "прогнозируемое событие"
+        verbose_name_plural = "прогнозируемые события"
+    
+    def __str__(self) -> str:
+        return f"{self.description} >> {self.result}"

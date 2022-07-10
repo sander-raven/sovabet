@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (
-    Event, PredictedRound, Predictor, Round, Season, Tournament
+    Event, PredictedEvent, PredictedRound, Predictor, Round, Season, Tournament
 )
 
 
@@ -59,6 +59,12 @@ class PredictorAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
 
 
+class PredictedEventInline(admin.TabularInline):
+    model = PredictedEvent
+    extra = 4
+    max_num = 4
+
+
 @admin.register(PredictedRound)
 class PredictedRoundAdmin(admin.ModelAdmin):
     list_display = ("__str__", )
@@ -66,3 +72,14 @@ class PredictedRoundAdmin(admin.ModelAdmin):
         "predictor", "round", "total_points", "created_at", "modified_at"
     )
     readonly_fields = ("total_points", "created_at", "modified_at")
+    inlines = (PredictedEventInline, )
+
+
+@admin.register(PredictedEvent)
+class PredictedEventAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "predicted_round")
+    search_fields = ("description", "result")
+    fields = (
+        "description", "result", "predicted_round", "created_at", "modified_at"
+    )
+    readonly_fields = ("created_at", "modified_at")
