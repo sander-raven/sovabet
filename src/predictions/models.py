@@ -121,6 +121,7 @@ class PredictedEvent(models.Model):
     result = models.CharField("результат", max_length=100, blank=True)
     created_at = models.DateTimeField("создано", auto_now_add=True)
     modified_at = models.DateTimeField("изменено", auto_now=True)
+    points = models.FloatField("баллы", default=0.0)
     predicted_round = models.ForeignKey(
         PredictedRound,
         on_delete=models.CASCADE,
