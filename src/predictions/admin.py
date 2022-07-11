@@ -1,9 +1,12 @@
 from django.contrib import admin
 
 from .models import (
-    Season,
-    Tournament,
     Game,
+    Performance,
+    Result,
+    Season,
+    Team,
+    Tournament,
 )
 
 
@@ -47,6 +50,20 @@ class TournamentAdmin(DefaultAdmin):
     }
 
 
+@admin.register(Team)
+class TeamAdmin(DefaultAdmin):
+    pass
+
+
+@admin.register(Result)
+class ResultAdmin(DefaultAdmin):
+    pass
+
+
+class TeamInLine(admin.TabularInline):
+    model = Performance
+
+
 @admin.register(Game)
 class GameAdmin(DefaultAdmin):
     search_fields = ("name", "info", "tournament__name", "tournament__name")
@@ -56,3 +73,4 @@ class GameAdmin(DefaultAdmin):
     active_filter = {
         "tournament": Tournament,
     }
+    inlines = (TeamInLine, )

@@ -41,12 +41,34 @@ class Tournament(CommonInfo):
         verbose_name_plural = "турниры"
 
 
+class Team(CommonInfo):
+
+    class Meta:
+        verbose_name = "команда"
+        verbose_name_plural = "команды"
+        ordering = ["name"]
+
+
+class Result(CommonInfo):
+
+    class Meta:
+        verbose_name = "результат"
+        verbose_name_plural = "результаты"
+        ordering = ["name"]
+
+
 class Game(CommonInfo):
     tournament = models.ForeignKey(
         Tournament,
         on_delete=models.PROTECT,
         related_name="games",
         verbose_name="турнир",
+    )
+    teams = models.ManyToManyField(
+        Team,
+        related_name="games",
+        verbose_name="команды",
+        through="Performance",
     )
 
     class Meta:
@@ -55,3 +77,23 @@ class Game(CommonInfo):
     
     def __str__(self) -> str:
         return f"{self.name} :: {self.tournament}"
+
+
+class Performance(models.Model):
+    game = models.ForeignKey(
+        Game,
+        on_delete=models.PROTECT,
+        verbose_name="игра"
+    )
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        verbose_name="команда"
+    )
+    result = models.ForeignKey(
+        Result,
+        on_delete=models.PROTECT,
+        verbose_name="результат",
+        null=True,
+        blank=True,
+    )
