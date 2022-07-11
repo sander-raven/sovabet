@@ -17,9 +17,17 @@ class DefaultAdmin(admin.ModelAdmin):
     search_fields = ("name", "info")
     fields = ("name", "info", "is_active", "created_at", "modified_at")
     readonly_fields = ("created_at", "modified_at")
+    active_filter = {}
 
     class Meta:
         abstract = True
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name in self.active_filter:
+            model = self.active_filter.get(db_field.name)
+            if model:
+                kwargs["queryset"] = model.objects.filter(is_active=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Season)
@@ -34,6 +42,9 @@ class TournamentAdmin(DefaultAdmin):
     fields = (
         "name", "info", "is_active", "season", "created_at", "modified_at"
     )
+    active_filter = {
+        "season": Season,
+    }
 
 
 @admin.register(Game)
@@ -42,3 +53,6 @@ class RoundAdmin(DefaultAdmin):
     fields = (
         "name", "info", "is_active", "tournament", "created_at", "modified_at"
     )
+    active_filter = {
+        "tournament": Tournament,
+    }
