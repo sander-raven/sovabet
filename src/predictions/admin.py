@@ -48,7 +48,7 @@ class TournamentAdmin(DefaultAdmin):
 
 
 @admin.register(Game)
-class RoundAdmin(DefaultAdmin):
+class GameAdmin(DefaultAdmin):
     search_fields = ("name", "info", "tournament__name", "tournament__name")
     fields = (
         "name", "info", "is_active", "tournament", "created_at", "modified_at"
