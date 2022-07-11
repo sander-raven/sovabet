@@ -36,9 +36,11 @@ class EventInline(admin.TabularInline):
 
 @admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
-    list_display = ("__str__", )
+    list_display = ("__str__", "is_active")
     search_fields = ("title", "info", "tournament__title", "tournament__info")
-    fields = ("title", "info", "tournament", "created_at", "modified_at")
+    fields = (
+        "title", "info", "is_active", "tournament", "created_at", "modified_at"
+    )
     readonly_fields = ("created_at", "modified_at")
     inlines = (EventInline, )
 

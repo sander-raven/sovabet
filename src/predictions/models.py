@@ -40,6 +40,7 @@ class Tournament(models.Model):
 class Round(models.Model):
     title = models.CharField("заголовок", max_length=50)
     info = models.TextField("информация", blank=True)
+    is_active = models.BooleanField("действующий?", default=True)
     created_at = models.DateTimeField("создан", auto_now_add=True)
     modified_at = models.DateTimeField("изменён", auto_now=True)
     tournament = models.ForeignKey(
