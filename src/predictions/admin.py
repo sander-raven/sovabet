@@ -65,6 +65,7 @@ class PredictedEventInline(admin.TabularInline):
     model = PredictedEvent
     extra = 3
     max_num = 3
+    readonly_fields = ("points", )
 
     def get_formset(self, request, obj=None, **kwargs):
         self.parent_obj = obj
@@ -102,7 +103,7 @@ class PredictedEventAdmin(admin.ModelAdmin):
     search_fields = ("description", "result", "predicted_round", "event")
     fields = (
         "description", "result", "predicted_round", "event",
-        "created_at", "modified_at"
+        "points", "created_at", "modified_at"
     )
     readonly_fields = ("points", "created_at", "modified_at")
 
