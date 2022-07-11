@@ -66,6 +66,20 @@ class PredictedEventInline(admin.TabularInline):
     extra = 3
     max_num = 3
 
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super(PredictedEventInline, self).get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            if self.parent_obj and self.parent_obj.round:
+                kwargs["queryset"] = Event.objects.filter(
+                    round=self.parent_obj.round
+                )
+            else:
+                kwargs["queryset"] = Event.objects.none()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(PredictedRound)
 class PredictedRoundAdmin(admin.ModelAdmin):
@@ -84,9 +98,22 @@ class PredictedRoundAdmin(admin.ModelAdmin):
 
 @admin.register(PredictedEvent)
 class PredictedEventAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "predicted_round")
-    search_fields = ("description", "result")
+    list_display = ("__str__", "predicted_round", "event")
+    search_fields = ("description", "result", "predicted_round", "event")
     fields = (
-        "description", "result", "predicted_round", "created_at", "modified_at"
+        "description", "result", "predicted_round", "event",
+        "created_at", "modified_at"
     )
     readonly_fields = ("created_at", "modified_at")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "event":
+            object_id = request.resolver_match.kwargs.get('object_id')
+            predicted_event = self.get_object(request, object_id)
+            if predicted_event and predicted_event.predicted_round:
+                kwargs["queryset"] = Event.objects.filter(
+                    round=predicted_event.predicted_round.round
+                )
+            else:
+                kwargs["queryset"] = Event.objects.none()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

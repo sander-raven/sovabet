@@ -129,6 +129,14 @@ class PredictedEvent(models.Model):
         related_name="predicted_events",
         verbose_name="прогнозируемый раунд",
     )
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="predicted_events",
+        verbose_name="событие",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "прогнозируемое событие"
