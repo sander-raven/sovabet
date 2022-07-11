@@ -15,22 +15,25 @@ admin.site.site_title = "SOVABET"
 admin.site.index_title = "Администрирование SOVABET"
 
 
-class DefaultAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "is_active")
-    search_fields = ("name", "info")
-    fields = ("name", "info", "is_active", "created_at", "modified_at")
-    readonly_fields = ("created_at", "modified_at")
+class ActiveFilterAdminMixin:
     active_filter = {}
 
-    class Meta:
-        abstract = True
-    
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name in self.active_filter:
             model = self.active_filter.get(db_field.name)
             if model:
                 kwargs["queryset"] = model.objects.filter(is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class DefaultAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
+    list_display = ("__str__", "is_active")
+    search_fields = ("name", "info")
+    fields = ("name", "info", "is_active", "created_at", "modified_at")
+    readonly_fields = ("created_at", "modified_at")
+
+    class Meta:
+        abstract = True
 
 
 @admin.register(Season)
@@ -60,8 +63,12 @@ class ResultAdmin(DefaultAdmin):
     pass
 
 
-class TeamInLine(admin.TabularInline):
+class TeamInLine(ActiveFilterAdminMixin, admin.TabularInline):
     model = Performance
+    active_filter = {
+        "team": Team,
+        "result": Result,
+    }
 
 
 @admin.register(Game)
