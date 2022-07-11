@@ -83,7 +83,7 @@ class PredictedEventInline(admin.TabularInline):
 
 @admin.register(PredictedRound)
 class PredictedRoundAdmin(admin.ModelAdmin):
-    list_display = ("__str__", )
+    list_display = ("__str__", "total_points")
     fields = (
         "predictor", "round", "total_points", "created_at", "modified_at"
     )
@@ -98,13 +98,13 @@ class PredictedRoundAdmin(admin.ModelAdmin):
 
 @admin.register(PredictedEvent)
 class PredictedEventAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "predicted_round", "event")
+    list_display = ("__str__", "points", "predicted_round", "event")
     search_fields = ("description", "result", "predicted_round", "event")
     fields = (
         "description", "result", "predicted_round", "event",
         "created_at", "modified_at"
     )
-    readonly_fields = ("created_at", "modified_at")
+    readonly_fields = ("points", "created_at", "modified_at")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "event":
