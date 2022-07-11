@@ -30,8 +30,8 @@ class TournamentAdmin(admin.ModelAdmin):
 
 class EventInline(admin.TabularInline):
     model = Event
-    extra = 4
-    max_num = 4
+    extra = 3
+    max_num = 3
 
 
 @admin.register(Round)
@@ -63,8 +63,8 @@ class PredictorAdmin(admin.ModelAdmin):
 
 class PredictedEventInline(admin.TabularInline):
     model = PredictedEvent
-    extra = 4
-    max_num = 4
+    extra = 3
+    max_num = 3
 
 
 @admin.register(PredictedRound)
