@@ -57,6 +57,27 @@ class Round(models.Model):
     def __str__(self) -> str:
         return f"{self.title} :: {self.tournament}"
 
+    def calculate_points(self):
+        events = Event.objects.filter(round=self)
+        predicted_rounds = PredictedRound.objects.filter(round=self)
+        for prediction in predicted_rounds:
+            predicted_events = PredictedEvent.objects.filter(
+                predicted_round=prediction
+            )
+            for predicted_event in predicted_events:
+                current_event_points = 0
+                if predicted_event.result in events.values_list("result", flat=True):
+                    current_event_points += 2
+                    if predicted_event.result == predicted_event.event.result:
+                        current_event_points += 1
+                        if predicted_event.event.description == "1":
+                            current_event_points += 1
+                predicted_event.points = current_event_points
+                predicted_event.save()
+            total_points = predicted_events.aggregate(models.Sum("points"))
+            prediction.total_points = total_points["points__sum"]
+            prediction.save()
+
 
 class Event(models.Model):
     description = models.CharField("описание", max_length=100)
