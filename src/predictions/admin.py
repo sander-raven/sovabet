@@ -76,6 +76,11 @@ class PredictedRoundAdmin(admin.ModelAdmin):
     readonly_fields = ("total_points", "created_at", "modified_at")
     inlines = (PredictedEventInline, )
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "round":
+            kwargs["queryset"] = Round.objects.filter(is_active=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(PredictedEvent)
 class PredictedEventAdmin(admin.ModelAdmin):
