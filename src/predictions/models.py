@@ -22,7 +22,7 @@ class CommonInfo(Active):
 
     class Meta:
         abstract = True
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -80,7 +80,7 @@ class Game(CommonInfo):
     class Meta:
         verbose_name = "игра"
         verbose_name_plural = "игры"
-    
+
     def __str__(self) -> str:
         return f"{self.name} :: {self.tournament}"
 
@@ -142,7 +142,7 @@ class Prediction(Active):
     class Meta:
         verbose_name = "прогноз"
         verbose_name_plural = "прогнозы"
-    
+
     def __str__(self) -> str:
         return f"Прогноз {self.predictor} на игру {self.game}"
 
@@ -170,6 +170,6 @@ class PredictionEvent(Timestamp):
     class Meta:
         verbose_name = "событие прогноза"
         verbose_name_plural = "события прогноза"
-    
+
     def __str__(self) -> str:
         return f"{self.team} >> {self.result}"

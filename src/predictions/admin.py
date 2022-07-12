@@ -105,8 +105,10 @@ class PredictionEventInline(admin.TabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         self.parent_obj = obj
-        return super(PredictionEventInline, self).get_formset(request, obj, **kwargs)
-    
+        return super(PredictionEventInline, self).get_formset(
+            request, obj, **kwargs
+        )
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "team":
             if self.parent_obj and self.parent_obj.game:
