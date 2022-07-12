@@ -97,3 +97,13 @@ class Performance(models.Model):
         null=True,
         blank=True,
     )
+
+    class Meta:
+        verbose_name = "выступление"
+        verbose_name_plural = "выступления"
+
+    def __str__(self) -> str:
+        output = f"#{self.pk}. Команда {self.team} в игре {self.game}"
+        if self.result:
+            output += f". Результат - {self.result}"
+        return output
