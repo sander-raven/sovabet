@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Game,
     Performance,
+    Predictor,
     Result,
     Season,
     Team,
@@ -84,3 +85,12 @@ class GameAdmin(DefaultAdmin):
         "tournament": Tournament,
     }
     inlines = (TeamInLine, )
+
+
+@admin.register(Predictor)
+class PredictorAdmin(DefaultAdmin):
+    list_display = ("__str__", "id", "vk_id", "is_active")
+    search_fields = ("name", "info", "vk_id")
+    fields = (
+        "name", "info", "vk_id", "is_active", "created_at", "modified_at"
+    )

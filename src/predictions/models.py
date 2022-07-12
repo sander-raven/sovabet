@@ -107,3 +107,12 @@ class Performance(models.Model):
         if self.result:
             output += f". Результат - {self.result}"
         return output
+
+
+class Predictor(CommonInfo):
+    vk_id = models.CharField("VK ID", max_length=50, blank=True)
+
+    class Meta:
+        verbose_name = "прогнозист"
+        verbose_name_plural = "прогнозисты"
+        ordering = ["name"]
