@@ -145,3 +145,31 @@ class Prediction(Active):
     
     def __str__(self) -> str:
         return f"Прогноз {self.predictor} на игру {self.game}"
+
+
+class PredictionEvent(Timestamp):
+    prediction = models.ForeignKey(
+        Prediction,
+        on_delete=models.CASCADE,
+        related_name="prediction_events",
+        verbose_name="прогноз",
+    )
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name="prediction_events",
+        verbose_name="команда",
+    )
+    result = models.ForeignKey(
+        Result,
+        on_delete=models.PROTECT,
+        verbose_name="результат",
+    )
+    points = models.FloatField("баллы", default=0.0)
+
+    class Meta:
+        verbose_name = "событие прогноза"
+        verbose_name_plural = "события прогноза"
+    
+    def __str__(self) -> str:
+        return f"{self.team} >> {self.result}"

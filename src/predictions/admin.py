@@ -4,6 +4,7 @@ from .models import (
     Game,
     Performance,
     Prediction,
+    PredictionEvent,
     Predictor,
     Result,
     Season,
@@ -97,6 +98,28 @@ class PredictorAdmin(DefaultAdmin):
     )
 
 
+class PredictionEventInline(admin.TabularInline):
+    model = PredictionEvent
+    max_num = 3
+    readonly_fields = ("points", )
+
+    def get_formset(self, request, obj=None, **kwargs):
+        self.parent_obj = obj
+        return super(PredictionEventInline, self).get_formset(request, obj, **kwargs)
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "team":
+            if self.parent_obj and self.parent_obj.game:
+                kwargs["queryset"] = Team.objects.filter(
+                    games=self.parent_obj.game
+                )
+            else:
+                kwargs["queryset"] = Team.objects.none()
+        if db_field.name == "result":
+            kwargs["queryset"] = Result.objects.filter(is_active=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 @admin.register(Prediction)
 class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
     list_display = ("__str__", "total_points", "is_active")
@@ -114,3 +137,4 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "predictor": Predictor,
         "game": Game,
     }
+    inlines = (PredictionEventInline, )
