@@ -22,7 +22,10 @@ class ActiveFilterAdminMixin:
         if db_field.name in self.active_filter:
             model = self.active_filter.get(db_field.name)
             if model:
-                kwargs["queryset"] = model.objects.filter(is_active=True)
+                try:
+                    kwargs["queryset"] = model.objects.filter(is_active=True)
+                except AttributeError as error:
+                    pass
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
