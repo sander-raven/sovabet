@@ -9,10 +9,16 @@ class Timestamp(models.Model):
         abstract = True
 
 
-class CommonInfo(Timestamp):
+class Active(Timestamp):
+    is_active = models.BooleanField("актив?", default=True)
+
+    class Meta:
+        abstract = True
+
+
+class CommonInfo(Active):
     name = models.CharField("название", max_length=50, unique=True)
     info = models.TextField("информация", blank=True)
-    is_active = models.BooleanField("актив?", default=True)
 
     class Meta:
         abstract = True
@@ -116,3 +122,26 @@ class Predictor(CommonInfo):
         verbose_name = "прогнозист"
         verbose_name_plural = "прогнозисты"
         ordering = ["name"]
+
+
+class Prediction(Active):
+    predictor = models.ForeignKey(
+        Predictor,
+        on_delete=models.CASCADE,
+        related_name="predictions",
+        verbose_name="прогнозист",
+    )
+    game = models.ForeignKey(
+        Game,
+        on_delete=models.CASCADE,
+        related_name="predictions",
+        verbose_name="игра",
+    )
+    total_points = models.FloatField("сумма баллов", default=0.0)
+
+    class Meta:
+        verbose_name = "прогноз"
+        verbose_name_plural = "прогнозы"
+    
+    def __str__(self) -> str:
+        return f"Прогноз {self.predictor} на игру {self.game}"

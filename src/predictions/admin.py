@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Game,
     Performance,
+    Prediction,
     Predictor,
     Result,
     Season,
@@ -94,3 +95,22 @@ class PredictorAdmin(DefaultAdmin):
     fields = (
         "name", "info", "vk_id", "is_active", "created_at", "modified_at"
     )
+
+
+@admin.register(Prediction)
+class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
+    list_display = ("__str__", "total_points", "is_active")
+    search_fields = ("predictor__name", "game__name")
+    fields = (
+        "predictor",
+        "game",
+        "total_points",
+        "is_active",
+        "created_at",
+        "modified_at",
+    )
+    readonly_fields = ("total_points", "created_at", "modified_at")
+    active_filter = {
+        "predictor": Predictor,
+        "game": Game,
+    }
