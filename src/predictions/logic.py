@@ -3,6 +3,7 @@
 
 from enum import Enum
 
+from django.db.models.aggregates import Sum
 from django.db.models.query import QuerySet
 
 from predictions.models import (
@@ -45,3 +46,13 @@ def get_prediction_events(prediction: Prediction) -> QuerySet[PredictionEvent]:
         prediction=prediction
     ).order_by("result")
     return prediction_events
+
+
+def calculate_total_points_for_prediction(
+    prediction: Prediction, prediction_events: PredictionEvent = None
+) -> None:
+    if not prediction_events:
+        prediction_events = get_prediction_events(prediction)
+    total_points = prediction_events.aggregate(Sum("points"))
+    prediction.total_points = total_points["points__sum"]
+    prediction.save()
