@@ -49,7 +49,8 @@ def get_prediction_events(prediction: Prediction) -> QuerySet[PredictionEvent]:
 
 
 def calculate_total_points_for_prediction(
-    prediction: Prediction, prediction_events: PredictionEvent = None
+    prediction: Prediction,
+    prediction_events: QuerySet[PredictionEvent] = None,
 ) -> None:
     """Fills in total_points of prediction and saves it."""
     if not prediction_events:
