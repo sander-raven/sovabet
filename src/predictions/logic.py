@@ -145,7 +145,7 @@ def calculate_prediction(
     calculate_total_points_for_prediction(prediction, prediction_events)
 
 
-def calculate_game_results(game: Game) -> None:
+def calculate_game_predictions(game: Game) -> None:
     performances = get_not_null_performances_for_game(game)
     ranked_performances = get_ranked_performances(performances)
     predictions = get_game_predictions(game)

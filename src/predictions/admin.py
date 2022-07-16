@@ -1,5 +1,12 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 
+from .logic import (
+    calculate_game_predictions,
+    calculate_prediction,
+    reset_game_predictions,
+    reset_prediction,
+)
 from .models import (
     Game,
     Performance,
@@ -87,6 +94,22 @@ class GameAdmin(DefaultAdmin):
         "tournament": Tournament,
     }
     inlines = (TeamInLine, )
+    change_form_template = "predictions/game_changeform.html"
+
+    def response_change(self, request, obj):
+        if "_calculate" in request.POST:
+            calculate_game_predictions(obj)
+            self.message_user(
+                request, "Результаты прогнозов на игру рассчитаны."
+            )
+            return HttpResponseRedirect(".")
+        if "_reset" in request.POST:
+            reset_game_predictions(obj)
+            self.message_user(
+                request, "Результаты прогнозов на игру сброшены."
+            )
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
 
 
 @admin.register(Predictor)
@@ -140,3 +163,15 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "game": Game,
     }
     inlines = (PredictionEventInline, )
+    change_form_template = "predictions/prediction_changeform.html"
+
+    def response_change(self, request, obj):
+        if "_calculate" in request.POST:
+            calculate_prediction(obj)
+            self.message_user(request, "Результаты прогноза рассчитаны.")
+            return HttpResponseRedirect(".")
+        if "_reset" in request.POST:
+            reset_prediction(obj)
+            self.message_user(request, "Результаты прогноза сброшены.")
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
