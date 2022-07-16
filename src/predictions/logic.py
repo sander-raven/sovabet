@@ -107,41 +107,51 @@ def calculate_total_points_for_prediction(
     prediction.save()
 
 
+def calculate_prediction(
+    prediction: Prediction, ranked_performances: RankedPerformances = None
+) -> None:
+    if not ranked_performances:
+        performances = get_not_null_performances_for_game(prediction.game)
+        ranked_performances = get_ranked_performances(performances)
+    
+    prediction_events = get_prediction_events(prediction)
+    events = [
+        event for event in prediction_events
+    ]
+    for event in events:
+        event.points = Points.NO_MATCHES.value
+
+    for ranked_performance in ranked_performances:
+        performance = ranked_performance.get("performance")
+        if performance:
+            full_hit = [
+                event for event in events
+                if event.result==performance.result and
+                event.team==performance.team
+            ]
+            if full_hit:
+                full_hit[0].points = ranked_performance.get("points")
+            else:
+                prizes_hit = [
+                    event for event in events
+                    if event.team==performance.team
+                ]
+                if prizes_hit:
+                    prizes_hit[0].points = Points.TEAM_WAS_AWARDED.value
+
+    for event in events:
+        event.save()
+
+    calculate_total_points_for_prediction(prediction, prediction_events)
+
+
 def calculate_game_results(game: Game) -> None:
     performances = get_not_null_performances_for_game(game)
     ranked_performances = get_ranked_performances(performances)
     predictions = get_game_predictions(game)
 
     for prediction in predictions:
-        prediction_events = get_prediction_events(prediction)
-        events = [
-            event for event in prediction_events
-        ]
-        for event in events:
-            event.points = Points.NO_MATCHES.value
-
-        for ranked_performance in ranked_performances:
-            performance = ranked_performance.get("performance")
-            if performance:
-                full_hit = [
-                    event for event in events
-                    if event.result==performance.result and
-                    event.team==performance.team
-                ]
-                if full_hit:
-                    full_hit[0].points = ranked_performance.get("points")
-                else:
-                    prizes_hit = [
-                        event for event in events
-                        if event.team==performance.team
-                    ]
-                    if prizes_hit:
-                        prizes_hit[0].points = Points.TEAM_WAS_AWARDED.value
-
-        for event in events:
-            event.save()
-
-        calculate_total_points_for_prediction(prediction, prediction_events)
+        calculate_prediction(prediction, ranked_performances)
 
 
 def reset_prediction(prediction: Prediction) -> None:
