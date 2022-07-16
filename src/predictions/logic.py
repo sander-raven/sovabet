@@ -142,3 +142,17 @@ def calculate_game_results(game: Game) -> None:
             event.save()
 
         calculate_total_points_for_prediction(prediction, prediction_events)
+
+
+def reset_prediction(prediction: Prediction) -> None:
+    prediction_events = get_prediction_events(prediction)
+    for event in prediction_events:
+        event.points = Points.NO_MATCHES.value
+        event.save()
+    calculate_total_points_for_prediction(prediction, prediction_events)
+
+
+def reset_game_predictions(game: Game) -> None:
+    predictions = get_game_predictions(game)
+    for prediction in predictions:
+        reset_prediction(prediction)
