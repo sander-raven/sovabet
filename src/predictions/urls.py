@@ -6,12 +6,12 @@ app_name = "predictions"
 urlpatterns = [
     path("", home, name="home"),
     path(
-        "season/<int:pk>",
+        "season/<int:pk>/",
         SeasonDetailView.as_view(),
         name="season_detail"
     ),
     path(
-        "tournament/<int:pk>",
+        "tournament/<int:pk>/",
         TournamentDetailView.as_view(),
         name="tournament_detail"
     ),
