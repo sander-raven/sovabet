@@ -95,15 +95,15 @@ def get_prediction_events(prediction: Prediction) -> QuerySet[PredictionEvent]:
     return prediction_events
 
 
-def calculate_total_points_for_prediction(
+def save_prediction_results(
     prediction: Prediction,
-    prediction_events: QuerySet[PredictionEvent] = None,
+    prediction_results: dict[str | int, float | int] = {},
 ) -> None:
-    """Fills in total_points of prediction and saves it."""
-    if not prediction_events:
-        prediction_events = get_prediction_events(prediction)
-    total_points = prediction_events.aggregate(Sum("points"))
-    prediction.total_points = total_points["points__sum"]
+    prediction.total_points = prediction_results.get("total_points", 0.0)
+    prediction.winners = prediction_results.get(1, 0)
+    prediction.runners_up = prediction_results.get(2, 0)
+    prediction.third_places = prediction_results.get(3, 0)
+    prediction.prize_winners = prediction_results.get("prize_winners", 0)
     prediction.save()
 
 
@@ -121,6 +121,14 @@ def calculate_prediction(
     for event in events:
         event.points = Points.NO_MATCHES.value
 
+    prediction_results = {
+        "total_points": 0.0,
+        1: 0,
+        2: 0,
+        3: 0,
+        "prize_winners": 0,
+    }
+
     for ranked_performance in ranked_performances:
         performance = ranked_performance.get("performance")
         if performance:
@@ -131,6 +139,8 @@ def calculate_prediction(
             ]
             if full_hit:
                 full_hit[0].points = ranked_performance.get("points")
+                prediction_results["total_points"] += full_hit[0].points
+                prediction_results[performance.result.pk] += 1
             else:
                 prizes_hit = [
                     event for event in events
@@ -138,11 +148,13 @@ def calculate_prediction(
                 ]
                 if prizes_hit:
                     prizes_hit[0].points = Points.TEAM_WAS_AWARDED.value
+                    prediction_results["total_points"] += prizes_hit[0].points
+                    prediction_results["prize_winners"] += 1
 
     for event in events:
         event.save()
 
-    calculate_total_points_for_prediction(prediction, prediction_events)
+    save_prediction_results(prediction, prediction_results)
 
 
 def calculate_game_predictions(game: Game) -> None:
@@ -159,7 +171,7 @@ def reset_prediction(prediction: Prediction) -> None:
     for event in prediction_events:
         event.points = Points.NO_MATCHES.value
         event.save()
-    calculate_total_points_for_prediction(prediction, prediction_events)
+    save_prediction_results(prediction)
 
 
 def reset_game_predictions(game: Game) -> None:
