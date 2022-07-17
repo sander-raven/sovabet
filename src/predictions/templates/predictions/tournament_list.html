@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Список турниров
+{% endblock title %}
+
+{% block content %}
+  <h2>Список турниров</h2>
+  
+  {% for object in object_list|dictsortreversed:"pk" %}
+    <article>
+      <a href="{% url 'predictions:tournament_detail' object.pk %} ">
+        <h4>{{ object.name }}</h4>
+      </a>
+      <p><i><a href="{% url 'predictions:season_detail' object.season.pk %} ">Сезон {{ object.season.name }}</a></i></p>
+      <p>{{ object.info }}</p>
+      
+      {% if object.is_active %}
+        <p><i>Идёт</i></p>
+      {% else %}
+        <p><i>Завершён</i></p>
+      {% endif %}
+        
+    </article>
+  {% endfor %}
+    
+{% endblock content %}

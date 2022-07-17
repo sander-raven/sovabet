@@ -1,10 +1,11 @@
 from django.urls import path
 
 from predictions.views import (
-    home,
     SeasonDetailView,
     SeasonListView,
     TournamentDetailView,
+    TournamentListView,
+    home,
 )
 
 
@@ -22,4 +23,5 @@ urlpatterns = [
         TournamentDetailView.as_view(),
         name="tournament_detail"
     ),
+    path("tournament/", TournamentListView.as_view(), name="tournament_list"),
 ]

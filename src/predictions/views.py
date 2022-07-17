@@ -34,6 +34,11 @@ class SeasonDetailView(DetailView):
         return context
 
 
+class TournamentListView(ListView):
+    model = Tournament
+    template_name = "predictions/tournament_list.html"
+
+
 class TournamentDetailView(DetailView):
     model = Tournament
     template_name = "predictions/tournament_detail.html"
