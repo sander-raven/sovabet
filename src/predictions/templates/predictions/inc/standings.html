@@ -1,0 +1,21 @@
+<h3>Турнирная таблица</h3>
+<table>
+<thead>
+    <tr>
+    <th>№</th>
+    <th>Прогнозист</th>
+    <th>Прогнозов</th>
+    <th>Сумма баллов</th>
+    </tr>
+</thead>
+<tbody>
+    {% for position in standings %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ position.predictor__name }}</td>
+        <td>{{ position.cnt }}</td>
+        <td>{{ position.sum_pts|floatformat }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>

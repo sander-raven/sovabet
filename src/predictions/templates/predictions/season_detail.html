@@ -24,25 +24,5 @@
 
   </details>
 
-  <h3>Турнирная таблица</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>№</th>
-        <th>Прогнозист</th>
-        <th>Прогнозов</th>
-        <th>Сумма баллов</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in tournament_table %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ record.predictor__name }}</td>
-          <td>{{ record.cnt }}</td>
-          <td>{{ record.sum_pts|floatformat }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% include 'predictions/inc/standings.html' %}
 {% endblock content %}

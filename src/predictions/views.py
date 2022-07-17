@@ -18,12 +18,12 @@ class SeasonDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        tournament_table = Prediction.objects\
+        standings = Prediction.objects\
             .filter(game__tournament__season=self.object)\
             .values("predictor__id", "predictor__name", "predictor__vk_id")\
             .annotate(cnt=Count("pk"), sum_pts=Sum("total_points"))\
             .order_by("-sum_pts", "cnt", "predictor__name")
-        context["tournament_table"] = tournament_table
+        context["standings"] = standings
         tournaments = Tournament.objects.filter(season=self.object)
         context["tournaments"] = tournaments
         return context
@@ -35,10 +35,10 @@ class TournamentDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        tournament_table = Prediction.objects\
+        standings = Prediction.objects\
             .filter(game__tournament=self.object)\
             .values("predictor__id", "predictor__name", "predictor__vk_id")\
             .annotate(cnt=Count("pk"), sum_pts=Sum("total_points"))\
             .order_by("-sum_pts", "cnt", "predictor__name")
-        context["tournament_table"] = tournament_table
+        context["standings"] = standings
         return context
