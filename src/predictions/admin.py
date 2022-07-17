@@ -40,7 +40,7 @@ class ActiveFilterAdminMixin:
 
 
 class DefaultAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
-    list_display = ("__str__", "is_active")
+    list_display = ("__str__", "id", "is_active")
     search_fields = ("name", "info")
     fields = ("name", "info", "is_active", "created_at", "modified_at")
     readonly_fields = ("created_at", "modified_at")
@@ -56,7 +56,7 @@ class SeasonAdmin(DefaultAdmin):
 
 @admin.register(Tournament)
 class TournamentAdmin(DefaultAdmin):
-    list_display = ("__str__", "season", "is_active")
+    list_display = ("__str__", "id", "season", "is_active")
     search_fields = ("name", "info", "season__name", "season__info")
     fields = (
         "name", "info", "is_active", "season", "created_at", "modified_at"
@@ -86,7 +86,9 @@ class TeamInLine(ActiveFilterAdminMixin, admin.TabularInline):
 
 @admin.register(Game)
 class GameAdmin(DefaultAdmin):
-    search_fields = ("name", "info", "tournament__name", "tournament__name")
+    search_fields = (
+        "name", "info", "id", "tournament__name", "tournament__name"
+    )
     fields = (
         "name", "info", "is_active", "tournament", "created_at", "modified_at"
     )
@@ -147,7 +149,7 @@ class PredictionEventInline(admin.TabularInline):
 
 @admin.register(Prediction)
 class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
-    list_display = ("__str__", "total_points", "is_active")
+    list_display = ("__str__", "id", "total_points", "is_active")
     search_fields = ("predictor__name", "game__name")
     fields = (
         "predictor",
