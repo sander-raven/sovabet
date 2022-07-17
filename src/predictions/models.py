@@ -152,6 +152,12 @@ class Prediction(Active):
         verbose_name="игра",
     )
     total_points = models.FloatField("сумма баллов", default=0.0)
+    winners = models.IntegerField("угадано победителей", default=0)
+    runners_up = models.IntegerField("угадано вторых призёров", default=0)
+    third_places = models.IntegerField("угадано третьих призёров", default=0)
+    prize_winners = models.IntegerField(
+        "угадано попаданий в призёры", default=0
+    )
 
     class Meta:
         verbose_name = "прогноз"

@@ -155,11 +155,23 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "predictor",
         "game",
         "total_points",
+        "winners",
+        "runners_up",
+        "third_places",
+        "prize_winners",
         "is_active",
         "created_at",
         "modified_at",
     )
-    readonly_fields = ("total_points", "created_at", "modified_at")
+    readonly_fields = (
+        "total_points",
+        "winners",
+        "runners_up",
+        "third_places",
+        "prize_winners",
+        "created_at",
+        "modified_at",
+    )
     active_filter = {
         "predictor": Predictor,
         "game": Game,
