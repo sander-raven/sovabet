@@ -4,8 +4,12 @@
     <tr>
     <th>№</th>
     <th>Прогнозист</th>
-    <th>Прогнозов</th>
-    <th>Сумма баллов</th>
+    <th>&#9314;</th>
+    <th>&#129353;</th>
+    <th>&#129352;</th>
+    <th>&#129351;</th>
+    <th>&#925;</th>
+    <th>&#8721;</th>
     </tr>
 </thead>
 <tbody>
@@ -13,8 +17,12 @@
     <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ position.predictor__name }}</td>
-        <td>{{ position.cnt }}</td>
-        <td>{{ position.sum_pts|floatformat }}</td>
+        <td>{{ position.prize_winners }}</td>
+        <td>{{ position.third_places }}</td>
+        <td>{{ position.runners_up }}</td>
+        <td>{{ position.winners }}</td>
+        <td>{{ position.count }}</td>
+        <td>{{ position.total_points|floatformat }}</td>
     </tr>
     {% endfor %}
 </tbody>

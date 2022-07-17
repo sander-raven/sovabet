@@ -26,8 +26,22 @@ class SeasonDetailView(DetailView):
         standings = Prediction.objects\
             .filter(game__tournament__season=self.object)\
             .values("predictor__id", "predictor__name", "predictor__vk_id")\
-            .annotate(cnt=Count("pk"), sum_pts=Sum("total_points"))\
-            .order_by("-sum_pts", "cnt", "predictor__name")
+            .annotate(
+                count=Count("pk"),
+                prize_winners=Sum("prize_winners"),
+                third_places=Sum("third_places"),
+                runners_up=Sum("runners_up"),
+                winners=Sum("winners"),
+                total_points=Sum("total_points"),
+            ).order_by(
+                "-total_points",
+                "count",
+                "-winners",
+                "-runners_up",
+                "-third_places",
+                "-prize_winners",
+                "predictor__name",
+            )
         context["standings"] = standings
         tournaments = Tournament.objects.filter(season=self.object)
         context["tournaments"] = tournaments
@@ -48,7 +62,21 @@ class TournamentDetailView(DetailView):
         standings = Prediction.objects\
             .filter(game__tournament=self.object)\
             .values("predictor__id", "predictor__name", "predictor__vk_id")\
-            .annotate(cnt=Count("pk"), sum_pts=Sum("total_points"))\
-            .order_by("-sum_pts", "cnt", "predictor__name")
+            .annotate(
+                count=Count("pk"),
+                prize_winners=Sum("prize_winners"),
+                third_places=Sum("third_places"),
+                runners_up=Sum("runners_up"),
+                winners=Sum("winners"),
+                total_points=Sum("total_points"),
+            ).order_by(
+                "-total_points",
+                "count",
+                "-winners",
+                "-runners_up",
+                "-third_places",
+                "-prize_winners",
+                "predictor__name",
+            )
         context["standings"] = standings
         return context
