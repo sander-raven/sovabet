@@ -34,6 +34,11 @@ class Season(CommonInfo):
         verbose_name = "сезон"
         verbose_name_plural = "сезоны"
 
+    def get_absolute_url(self):
+        return reverse(
+            "predictions:season_detail", kwargs={"pk": self.pk}
+        )
+
 
 class Tournament(CommonInfo):
     season = models.ForeignKey(

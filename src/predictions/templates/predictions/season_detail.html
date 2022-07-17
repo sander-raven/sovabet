@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Сезон {{ object.name }}
+{% endblock title %}
+
+{% block content %}
+  <h2>Сезон {{ object.name }}</h2>
+  
+  {% if object.info %}
+    <p>{{ object.info }}</p>
+  {% endif %}
+  
+  <h3>Список турниров</h3>
+  <details>
+    <summary>Развернуть</summary>
+    <ol>
+    {% for tournament in tournaments %}
+      <li>
+        <a href="{% url 'predictions:tournament_detail' tournament.pk %}">{{ tournament.name }}</a>
+      </li>
+    {% endfor %}
+    </ol>
+
+  </details>
+
+  <h3>Турнирная таблица</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>№</th>
+        <th>Прогнозист</th>
+        <th>Прогнозов</th>
+        <th>Сумма баллов</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in tournament_table %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ record.predictor__name }}</td>
+          <td>{{ record.cnt }}</td>
+          <td>{{ record.sum_pts|floatformat }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}
