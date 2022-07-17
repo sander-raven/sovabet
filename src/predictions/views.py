@@ -1,9 +1,15 @@
 from typing import Any, Dict
 
 from django.db.models.aggregates import Count, Sum
+from django.shortcuts import redirect
 from django.views.generic import DetailView
 
 from predictions.models import Prediction, Tournament
+
+
+def home(request):
+    tournament = Tournament.objects.filter(is_active=True).first()
+    return redirect(tournament)
 
 
 class TournamentDetailView(DetailView):

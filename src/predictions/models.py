@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Timestamp(models.Model):
@@ -45,6 +46,11 @@ class Tournament(CommonInfo):
     class Meta:
         verbose_name = "турнир"
         verbose_name_plural = "турниры"
+
+    def get_absolute_url(self):
+        return reverse(
+            "predictions:tournament_detail", kwargs={"pk": self.pk}
+        )
 
 
 class Team(CommonInfo):
