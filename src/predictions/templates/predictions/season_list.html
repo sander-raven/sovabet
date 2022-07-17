@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Список сезонов
+{% endblock title %}
+
+{% block content %}
+  <h2>Список сезонов</h2>
+  
+  {% for object in object_list|dictsortreversed:"pk" %}
+    <article>
+      <a href="{% url 'predictions:season_detail' object.pk %} ">
+        <h4>{{ object.name }}</h4>
+      </a>
+      <p>{{ object.info }}</p>
+      
+      {% if object.is_active %}
+        <p><i>Идёт</i></p>
+      {% else %}
+        <p><i>Завершён</i></p>
+      {% endif %}
+        
+    </article>
+  {% endfor %}
+    
+{% endblock content %}

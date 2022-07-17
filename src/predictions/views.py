@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from django.db.models.aggregates import Count, Sum
 from django.shortcuts import redirect
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 
 from predictions.models import Prediction, Season, Tournament
 
@@ -10,6 +10,11 @@ from predictions.models import Prediction, Season, Tournament
 def home(request):
     tournament = Tournament.objects.filter(is_active=True).first()
     return redirect(tournament)
+
+
+class SeasonListView(ListView):
+    model = Season
+    template_name = "predictions/season_list.html"
 
 
 class SeasonDetailView(DetailView):
