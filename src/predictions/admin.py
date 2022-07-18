@@ -25,6 +25,18 @@ admin.site.site_title = "SOVABET"
 admin.site.index_title = "Администрирование SOVABET"
 
 
+@admin.action(description="Сделать выбранные записи активными")
+def make_active(modeladmin, request, queryset):
+    queryset.update(is_active=True)
+    modeladmin.message_user(request, 'Выбранные записи сделаны активными')
+
+
+@admin.action(description="Сделать выбранные записи неактивными")
+def make_inactive(modeladmin, request, queryset):
+    queryset.update(is_active=False)
+    modeladmin.message_user(request, 'Выбранные записи сделаны неактивными')
+
+
 class ActiveFilterAdminMixin:
     active_filter = {}
 
@@ -44,6 +56,7 @@ class DefaultAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
     search_fields = ("name", "info")
     fields = ("name", "info", "is_active", "created_at", "modified_at")
     readonly_fields = ("created_at", "modified_at")
+    actions = (make_active, make_inactive)
 
     class Meta:
         abstract = True
@@ -177,6 +190,7 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "game": Game,
     }
     inlines = (PredictionEventInline, )
+    actions = (make_active, make_inactive)
     change_form_template = "predictions/prediction_changeform.html"
 
     def response_change(self, request, obj):
