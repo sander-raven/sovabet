@@ -4,7 +4,6 @@
 from collections import namedtuple
 from enum import Enum
 
-from django.db.models.aggregates import Sum
 from django.db.models.query import QuerySet
 
 from predictions.models import (
@@ -12,8 +11,12 @@ from predictions.models import (
     Performance,
     Prediction,
     PredictionEvent,
+    Season,
+    Tournament,
 )
 
+
+# Helper classes
 
 class Points(Enum):
     WINNER_MATCHED = 4
@@ -33,8 +36,77 @@ RankedPerformances = namedtuple(
 )
 
 
+# Get different querysets
+
+def get_season_tournaments(
+    season: Season, is_active: bool | None = None
+) -> QuerySet[Tournament]:
+    """Returns a queryset with Tournament instances for the season.
+
+    If is_active is:
+        - None - returns a queryset without a filter.
+        - True - returns a queryset with active records.
+        - False - returns a queryset with inactive records.
+    """
+    if is_active is None:
+        tournaments = Tournament.objects.filter(season=season)
+    else:
+        tournaments = Tournament.objects.filter(
+            season=season, is_active=is_active
+        )
+    return tournaments
+
+
+def get_tournament_games(
+    tournament: Tournament, is_active: bool | None = None
+) -> QuerySet[Game]:
+    """Returns a queryset with Game instances for the tournament.
+
+    If is_active is:
+        - None - returns a queryset without a filter.
+        - True - returns a queryset with active records.
+        - False - returns a queryset with inactive records.
+    """
+    if is_active is None:
+        games = Game.objects.filter(tournament=tournament)
+    else:
+        games = Game.objects.filter(
+            tournament=tournament, is_active=is_active
+        )
+    return games
+
+
+def get_game_predictions(
+    game: Game, is_active: bool | None = None
+) -> QuerySet[Prediction]:
+    """Returns a queryset with Prediction instances for the game.
+
+    If is_active is:
+        - None - returns a queryset without a filter.
+        - True - returns a queryset with active records.
+        - False - returns a queryset with inactive records.
+    """
+    if is_active is None:
+        predictions = Prediction.objects.filter(game=game)
+    else:
+        predictions = Prediction.objects.filter(
+            game=game, is_active=is_active
+        )
+    return predictions
+
+
+def get_prediction_events(prediction: Prediction) -> QuerySet[PredictionEvent]:
+    """Returns a queryset with PredictionEvent instances
+    for the prediction.
+    """
+    prediction_events = PredictionEvent.objects.filter(
+        prediction=prediction
+    ).order_by("result")
+    return prediction_events
+
+
 def get_not_null_performances_for_game(game: Game) -> QuerySet[Performance]:
-    """Returns queryset with Performance instances
+    """Returns a queryset with Performance instances
     that have a non-empty result field.
     """
     performances = Performance.objects.filter(
@@ -79,21 +151,7 @@ def get_ranked_performances(
     return RankedPerformances(*prep_performances)
 
 
-def get_game_predictions(game: Game) -> QuerySet[Prediction]:
-    """Returns queryset with active Prediction instances."""
-    predictions = Prediction.objects.filter(
-        game=game, is_active=True
-    )
-    return predictions
-
-
-def get_prediction_events(prediction: Prediction) -> QuerySet[PredictionEvent]:
-    """Returns queryset with PredictionEvent instances for prediction."""
-    prediction_events = PredictionEvent.objects.filter(
-        prediction=prediction
-    ).order_by("result")
-    return prediction_events
-
+# Results manipulation
 
 def save_prediction_results(
     prediction: Prediction,
@@ -160,7 +218,7 @@ def calculate_prediction(
 def calculate_game_predictions(game: Game) -> None:
     performances = get_not_null_performances_for_game(game)
     ranked_performances = get_ranked_performances(performances)
-    predictions = get_game_predictions(game)
+    predictions = get_game_predictions(game, is_active=True)
 
     for prediction in predictions:
         calculate_prediction(prediction, ranked_performances)
@@ -175,6 +233,6 @@ def reset_prediction(prediction: Prediction) -> None:
 
 
 def reset_game_predictions(game: Game) -> None:
-    predictions = get_game_predictions(game)
+    predictions = get_game_predictions(game, is_active=True)
     for prediction in predictions:
         reset_prediction(prediction)
