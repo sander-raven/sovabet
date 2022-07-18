@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from import_export import resources
+from import_export.admin import ImportExportMixin
 
 from predictions.logic import (
     calculate_game_predictions,
@@ -97,9 +99,18 @@ class TournamentAdmin(DefaultAdmin):
         return super().response_change(request, obj)
 
 
+class TeamResource(resources.ModelResource):
+
+    class Meta:
+        model = Team
+        skip_unchanged = True
+        report_skipped = True
+        fields = ("id", "name", "info")
+
+
 @admin.register(Team)
-class TeamAdmin(DefaultAdmin):
-    pass
+class TeamAdmin(ImportExportMixin, DefaultAdmin):
+    resource_class = TeamResource
 
 
 @admin.register(Result)
