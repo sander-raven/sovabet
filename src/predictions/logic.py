@@ -224,6 +224,12 @@ def calculate_game_predictions(game: Game) -> None:
         calculate_prediction(prediction, ranked_performances)
 
 
+def calculate_tournament_predictions(tournament: Tournament) -> None:
+    games = get_tournament_games(tournament)
+    for game in games:
+        calculate_game_predictions(game)
+
+
 def reset_prediction(prediction: Prediction) -> None:
     prediction_events = get_prediction_events(prediction)
     for event in prediction_events:
@@ -236,3 +242,9 @@ def reset_game_predictions(game: Game) -> None:
     predictions = get_game_predictions(game, is_active=True)
     for prediction in predictions:
         reset_prediction(prediction)
+
+
+def reset_tournament_predictions(tournament: Tournament) -> None:
+    games = get_tournament_games(tournament)
+    for game in games:
+        reset_game_predictions(game)

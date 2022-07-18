@@ -4,8 +4,10 @@ from django.http import HttpResponseRedirect
 from .logic import (
     calculate_game_predictions,
     calculate_prediction,
+    calculate_tournament_predictions,
     reset_game_predictions,
     reset_prediction,
+    reset_tournament_predictions,
 )
 from .models import (
     Game,
@@ -77,6 +79,22 @@ class TournamentAdmin(DefaultAdmin):
     active_filter = {
         "season": Season,
     }
+    change_form_template = "predictions/tournament_changeform.html"
+
+    def response_change(self, request, obj):
+        if "_calculate" in request.POST:
+            calculate_tournament_predictions(obj)
+            self.message_user(
+                request, "Результаты прогнозов на игры турнира рассчитаны."
+            )
+            return HttpResponseRedirect(".")
+        if "_reset" in request.POST:
+            reset_tournament_predictions(obj)
+            self.message_user(
+                request, "Результаты прогнозов на игры турнира сброшены."
+            )
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
 
 
 @admin.register(Team)
