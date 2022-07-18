@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
-from .logic import (
+from predictions.logic import (
     calculate_game_predictions,
     calculate_prediction,
     calculate_tournament_predictions,
@@ -9,7 +9,7 @@ from .logic import (
     reset_prediction,
     reset_tournament_predictions,
 )
-from .models import (
+from predictions.models import (
     Game,
     Performance,
     Prediction,
