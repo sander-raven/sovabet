@@ -136,8 +136,17 @@ class TeamInLine(ActiveFilterAdminMixin, admin.TabularInline):
     }
 
 
+class GameResource(resources.ModelResource):
+
+    class Meta:
+        model = Game
+        skip_unchanged = True
+        report_skipped = True
+        fields = ("id", "name", "info", "tournament")
+
+
 @admin.register(Game)
-class GameAdmin(DefaultAdmin):
+class GameAdmin(ImportExportMixin, DefaultAdmin):
     search_fields = (
         "name", "info", "id", "tournament__name", "tournament__name"
     )
@@ -148,6 +157,7 @@ class GameAdmin(DefaultAdmin):
         "tournament": Tournament,
     }
     inlines = (TeamInLine, )
+    resource_class = GameResource
     change_form_template = "predictions/game_changeform.html"
 
     def response_change(self, request, obj):
