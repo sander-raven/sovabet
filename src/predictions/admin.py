@@ -156,13 +156,23 @@ class GameAdmin(DefaultAdmin):
         return super().response_change(request, obj)
 
 
+class PredictorResource(resources.ModelResource):
+
+    class Meta:
+        model = Predictor
+        skip_unchanged = True
+        report_skipped = True
+        fields = ("id", "name", "vk_id", "info")
+
+
 @admin.register(Predictor)
-class PredictorAdmin(DefaultAdmin):
+class PredictorAdmin(ImportExportMixin, DefaultAdmin):
     list_display = ("__str__", "id", "vk_id", "is_active")
     search_fields = ("name", "info", "vk_id")
     fields = (
         "name", "info", "vk_id", "is_active", "created_at", "modified_at"
     )
+    resource_class = PredictorResource
 
 
 class PredictionEventInline(admin.TabularInline):
