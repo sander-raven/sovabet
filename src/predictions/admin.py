@@ -71,8 +71,17 @@ class SeasonAdmin(DefaultAdmin):
     pass
 
 
+class TournamentResource(resources.ModelResource):
+
+    class Meta:
+        model = Tournament
+        skip_unchanged = True
+        report_skipped = True
+        fields = ("id", "name", "info", "season")
+
+
 @admin.register(Tournament)
-class TournamentAdmin(DefaultAdmin):
+class TournamentAdmin(ImportExportMixin, DefaultAdmin):
     list_display = ("__str__", "id", "season", "is_active")
     search_fields = ("name", "info", "season__name", "season__info")
     fields = (
@@ -81,6 +90,7 @@ class TournamentAdmin(DefaultAdmin):
     active_filter = {
         "season": Season,
     }
+    resource_class = TournamentResource
     change_form_template = "predictions/tournament_changeform.html"
 
     def response_change(self, request, obj):
