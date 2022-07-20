@@ -11,6 +11,7 @@ from predictions.models import (
     Performance,
     Prediction,
     PredictionEvent,
+    Result,
     Season,
     Tournament,
 )
@@ -122,7 +123,7 @@ def get_ranked_performances(
     prep_performances = []
 
     # winner
-    performance = performances.filter(result__id=1).first()
+    performance = performances.filter(result=Result.WINNER).first()
     prep_performances.append(
         {
             "performance": performance,
@@ -131,7 +132,7 @@ def get_ranked_performances(
     )
 
     # runner up
-    performance = performances.filter(result__id=2).first()
+    performance = performances.filter(result=Result.RUNNER_UP).first()
     prep_performances.append(
         {
             "performance": performance,
@@ -140,7 +141,7 @@ def get_ranked_performances(
     )
 
     # third place
-    performance = performances.filter(result__id=3).first()
+    performance = performances.filter(result=Result.THIRD_PLACE).first()
     prep_performances.append(
         {
             "performance": performance,
@@ -181,9 +182,9 @@ def calculate_prediction(
 
     prediction_results = {
         "total_points": 0.0,
-        1: 0,
-        2: 0,
-        3: 0,
+        Result.WINNER: 0,
+        Result.RUNNER_UP: 0,
+        Result.THIRD_PLACE: 0,
         "prize_winners": 0,
     }
 
@@ -198,7 +199,7 @@ def calculate_prediction(
             if full_hit:
                 full_hit[0].points = ranked_performance.get("points")
                 prediction_results["total_points"] += full_hit[0].points
-                prediction_results[performance.result.pk] += 1
+                prediction_results[performance.result] += 1
             else:
                 prizes_hit = [
                     event for event in events

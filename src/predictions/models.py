@@ -2,6 +2,12 @@ from django.db import models
 from django.urls import reverse
 
 
+class Result(models.IntegerChoices):
+    WINNER = 1, "Победитель"
+    RUNNER_UP = 2, "Второй призёр"
+    THIRD_PLACE = 3, "Третий призёр"
+
+
 class Timestamp(models.Model):
     created_at = models.DateTimeField("создание", auto_now_add=True)
     modified_at = models.DateTimeField("изменение", auto_now=True)
@@ -66,14 +72,6 @@ class Team(CommonInfo):
         ordering = ["name"]
 
 
-class Result(CommonInfo):
-
-    class Meta:
-        verbose_name = "результат"
-        verbose_name_plural = "результаты"
-        ordering = ["name"]
-
-
 class Game(CommonInfo):
     tournament = models.ForeignKey(
         Tournament,
@@ -107,10 +105,9 @@ class Performance(models.Model):
         on_delete=models.PROTECT,
         verbose_name="команда"
     )
-    result = models.ForeignKey(
-        Result,
-        on_delete=models.PROTECT,
+    result = models.IntegerField(
         verbose_name="результат",
+        choices=Result.choices,
         null=True,
         blank=True,
     )
@@ -180,10 +177,9 @@ class PredictionEvent(Timestamp):
         related_name="prediction_events",
         verbose_name="команда",
     )
-    result = models.ForeignKey(
-        Result,
-        on_delete=models.PROTECT,
+    result = models.IntegerField(
         verbose_name="результат",
+        choices=Result.choices,
     )
     points = models.FloatField("баллы", default=0.0)
 

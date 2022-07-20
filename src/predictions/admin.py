@@ -17,7 +17,6 @@ from predictions.models import (
     Prediction,
     PredictionEvent,
     Predictor,
-    Result,
     Season,
     Team,
     Tournament,
@@ -123,16 +122,10 @@ class TeamAdmin(ImportExportMixin, DefaultAdmin):
     resource_class = TeamResource
 
 
-@admin.register(Result)
-class ResultAdmin(DefaultAdmin):
-    pass
-
-
-class TeamInLine(ActiveFilterAdminMixin, admin.TabularInline):
+class PerformanceInLine(ActiveFilterAdminMixin, admin.TabularInline):
     model = Performance
     active_filter = {
         "team": Team,
-        "result": Result,
     }
 
 
@@ -156,7 +149,7 @@ class GameAdmin(ImportExportMixin, DefaultAdmin):
     active_filter = {
         "tournament": Tournament,
     }
-    inlines = (TeamInLine, )
+    inlines = (PerformanceInLine, )
     resource_class = GameResource
     change_form_template = "predictions/game_changeform.html"
 
@@ -214,8 +207,6 @@ class PredictionEventInline(admin.TabularInline):
                 )
             else:
                 kwargs["queryset"] = Team.objects.none()
-        if db_field.name == "result":
-            kwargs["queryset"] = Result.objects.filter(is_active=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
