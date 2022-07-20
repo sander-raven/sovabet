@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.urls import reverse
 
@@ -8,22 +10,18 @@ class Result(models.IntegerChoices):
     THIRD_PLACE = 3, "Третий призёр"
 
 
-class Timestamp(models.Model):
+class BaseAbstractModel(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField("создание", auto_now_add=True)
-    modified_at = models.DateTimeField("изменение", auto_now=True)
-
-    class Meta:
-        abstract = True
-
-
-class Active(Timestamp):
+    updated_at = models.DateTimeField("изменение", auto_now=True)
     is_active = models.BooleanField("актив?", default=True)
 
     class Meta:
         abstract = True
+        ordering = ("-created_at", )
 
 
-class CommonInfo(Active):
+class GeneralInfoAbstractModel(BaseAbstractModel):
     name = models.CharField("название", max_length=50, unique=True)
     info = models.TextField("информация", blank=True)
 
@@ -34,7 +32,15 @@ class CommonInfo(Active):
         return self.name
 
 
-class Season(CommonInfo):
+class StartedAtAbstractModel(GeneralInfoAbstractModel):
+    started_at = models.DateTimeField("начало", blank=True, null=True)
+
+    class Meta:
+        abstract = True
+        ordering = ("-started_at", )
+
+
+class Season(StartedAtAbstractModel):
 
     class Meta:
         verbose_name = "сезон"
@@ -46,7 +52,7 @@ class Season(CommonInfo):
         )
 
 
-class Tournament(CommonInfo):
+class Tournament(StartedAtAbstractModel):
     season = models.ForeignKey(
         Season,
         on_delete=models.PROTECT,
@@ -64,15 +70,15 @@ class Tournament(CommonInfo):
         )
 
 
-class Team(CommonInfo):
+class Team(GeneralInfoAbstractModel):
 
     class Meta:
         verbose_name = "команда"
         verbose_name_plural = "команды"
-        ordering = ["name"]
+        ordering = ("name", )
 
 
-class Game(CommonInfo):
+class Game(StartedAtAbstractModel):
     tournament = models.ForeignKey(
         Tournament,
         on_delete=models.PROTECT,
@@ -94,7 +100,7 @@ class Game(CommonInfo):
         return f"{self.name} :: {self.tournament}"
 
 
-class Performance(models.Model):
+class Performance(BaseAbstractModel):
     game = models.ForeignKey(
         Game,
         on_delete=models.PROTECT,
@@ -123,17 +129,17 @@ class Performance(models.Model):
         return output
 
 
-class Predictor(CommonInfo):
+class Predictor(GeneralInfoAbstractModel):
     name = models.CharField("имя", max_length=50)
     vk_id = models.IntegerField("VK ID", blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = "прогнозист"
         verbose_name_plural = "прогнозисты"
-        ordering = ["name"]
+        ordering = ("name", )
 
 
-class Prediction(Active):
+class Prediction(BaseAbstractModel):
     predictor = models.ForeignKey(
         Predictor,
         on_delete=models.CASCADE,
@@ -162,7 +168,7 @@ class Prediction(Active):
         return f"Прогноз {self.predictor} на игру {self.game}"
 
 
-class PredictionEvent(Timestamp):
+class PredictionEvent(BaseAbstractModel):
     prediction = models.ForeignKey(
         Prediction,
         on_delete=models.CASCADE,

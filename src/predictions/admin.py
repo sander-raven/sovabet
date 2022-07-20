@@ -28,6 +28,8 @@ admin.site.site_title = "SOVABET"
 admin.site.index_title = "Администрирование SOVABET"
 
 
+# Admin actions
+
 @admin.action(description="Сделать выбранные записи активными")
 def make_active(modeladmin, request, queryset):
     queryset.update(is_active=True)
@@ -39,6 +41,8 @@ def make_inactive(modeladmin, request, queryset):
     queryset.update(is_active=False)
     modeladmin.message_user(request, 'Выбранные записи сделаны неактивными')
 
+
+# Mixins
 
 class ActiveFilterAdminMixin:
     active_filter = {}
@@ -54,37 +58,94 @@ class ActiveFilterAdminMixin:
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class DefaultAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
+# Model resources
+
+class BaseAbstractResource(resources.ModelResource):
+
+    class Meta:
+        abstract = True
+        skip_unchanged = True
+        report_skipped = True
+
+
+class TournamentResource(BaseAbstractResource):
+
+    class Meta:
+        model = Tournament
+        fields = ("id", "name", "info", "season")
+
+
+class TeamResource(BaseAbstractResource):
+
+    class Meta:
+        model = Team
+        fields = ("id", "name", "info")
+
+
+class GameResource(BaseAbstractResource):
+
+    class Meta:
+        model = Game
+        fields = ("id", "name", "info", "tournament")
+
+
+class PredictorResource(BaseAbstractResource):
+
+    class Meta:
+        model = Predictor
+        fields = ("id", "name", "info", "vk_id")
+
+
+# Admin models
+
+class BaseAbstractAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
     list_display = ("__str__", "id", "is_active")
-    search_fields = ("name", "info")
-    fields = ("name", "info", "is_active", "created_at", "modified_at")
-    readonly_fields = ("created_at", "modified_at")
+    list_display_links = ("__str__", "id")
+    search_fields = ("id", "name", "info")
+    fields = ("id", "name", "info", "is_active", "created_at", "updated_at")
+    readonly_fields = ("id", "created_at", "updated_at")
     actions = (make_active, make_inactive)
 
     class Meta:
         abstract = True
 
 
+class StartedAtAdmin(BaseAbstractAdmin):
+    list_display = ("__str__", "started_at", "id", "is_active")
+    list_display_links = ("__str__", "started_at", "id")
+    fields = (
+        "id",
+        "name",
+        "info",
+        "started_at",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+    ordering = ("-started_at", )
+
+    class Meta:
+        abstract = True
+
+
 @admin.register(Season)
-class SeasonAdmin(DefaultAdmin):
+class SeasonAdmin(StartedAtAdmin):
     pass
 
 
-class TournamentResource(resources.ModelResource):
-
-    class Meta:
-        model = Tournament
-        skip_unchanged = True
-        report_skipped = True
-        fields = ("id", "name", "info", "season")
-
-
 @admin.register(Tournament)
-class TournamentAdmin(ImportExportMixin, DefaultAdmin):
-    list_display = ("__str__", "id", "season", "is_active")
-    search_fields = ("name", "info", "season__name", "season__info")
+class TournamentAdmin(ImportExportMixin, StartedAtAdmin):
+    list_display = ("__str__", "started_at", "id", "season", "is_active")
+    search_fields = ("id", "name", "info", "season__name", "season__info")
     fields = (
-        "name", "info", "is_active", "season", "created_at", "modified_at"
+        "id",
+        "name",
+        "info",
+        "season",
+        "started_at",
+        "is_active",
+        "created_at",
+        "updated_at",
     )
     active_filter = {
         "season": Season,
@@ -108,43 +169,33 @@ class TournamentAdmin(ImportExportMixin, DefaultAdmin):
         return super().response_change(request, obj)
 
 
-class TeamResource(resources.ModelResource):
-
-    class Meta:
-        model = Team
-        skip_unchanged = True
-        report_skipped = True
-        fields = ("id", "name", "info")
-
-
 @admin.register(Team)
-class TeamAdmin(ImportExportMixin, DefaultAdmin):
+class TeamAdmin(ImportExportMixin, BaseAbstractAdmin):
     resource_class = TeamResource
 
 
 class PerformanceInLine(ActiveFilterAdminMixin, admin.TabularInline):
     model = Performance
+    fields = ("team", "result")
     active_filter = {
         "team": Team,
     }
 
 
-class GameResource(resources.ModelResource):
-
-    class Meta:
-        model = Game
-        skip_unchanged = True
-        report_skipped = True
-        fields = ("id", "name", "info", "tournament")
-
-
 @admin.register(Game)
-class GameAdmin(ImportExportMixin, DefaultAdmin):
+class GameAdmin(ImportExportMixin, StartedAtAdmin):
     search_fields = (
-        "name", "info", "id", "tournament__name", "tournament__name"
+        "id", "name", "info", "tournament__name", "tournament__info"
     )
     fields = (
-        "name", "info", "is_active", "tournament", "created_at", "modified_at"
+        "id",
+        "name",
+        "info",
+        "tournament",
+        "started_at",
+        "is_active",
+        "created_at",
+        "updated_at",
     )
     active_filter = {
         "tournament": Tournament,
@@ -169,27 +220,25 @@ class GameAdmin(ImportExportMixin, DefaultAdmin):
         return super().response_change(request, obj)
 
 
-class PredictorResource(resources.ModelResource):
-
-    class Meta:
-        model = Predictor
-        skip_unchanged = True
-        report_skipped = True
-        fields = ("id", "name", "vk_id", "info")
-
-
 @admin.register(Predictor)
-class PredictorAdmin(ImportExportMixin, DefaultAdmin):
+class PredictorAdmin(ImportExportMixin, BaseAbstractAdmin):
     list_display = ("__str__", "id", "vk_id", "is_active")
-    search_fields = ("name", "info", "vk_id")
+    search_fields = ("id", "name", "info", "vk_id")
     fields = (
-        "name", "info", "vk_id", "is_active", "created_at", "modified_at"
+        "id",
+        "name",
+        "info",
+        "vk_id",
+        "is_active",
+        "created_at",
+        "updated_at",
     )
     resource_class = PredictorResource
 
 
 class PredictionEventInline(admin.TabularInline):
     model = PredictionEvent
+    fields = ("team", "result", "points")
     max_num = 3
     readonly_fields = ("points", )
 
@@ -224,7 +273,7 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "prize_winners",
         "is_active",
         "created_at",
-        "modified_at",
+        "updated_at",
     )
     readonly_fields = (
         "total_points",
@@ -233,7 +282,7 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "third_places",
         "prize_winners",
         "created_at",
-        "modified_at",
+        "updated_at",
     )
     active_filter = {
         "predictor": Predictor,
