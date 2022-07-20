@@ -125,9 +125,7 @@ class Performance(models.Model):
 
 class Predictor(CommonInfo):
     name = models.CharField("имя", max_length=50)
-    vk_id = models.CharField(
-        "VK ID", max_length=50, blank=True, null=True, unique=True
-    )
+    vk_id = models.IntegerField("VK ID", blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = "прогнозист"
