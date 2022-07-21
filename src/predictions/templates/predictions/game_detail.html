@@ -15,17 +15,13 @@
   <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
 
   <h3>Призёры</h3>
-  <details>
-    <summary>Развернуть</summary>
-    <ol>
-    {% for performance in prize_performances %}
-      <li>
-        {{ performance.team.name }}
-      </li>
-    {% endfor %}
-    </ol>
-
-  </details>
+  <ol>
+  {% for performance in prize_performances %}
+    <li>
+      {{ performance.team.name }}
+    </li>
+  {% endfor %}
+  </ol>
 
   {% include 'predictions/inc/standings.html' %}
 {% endblock content %}
