@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Главная страница
+{% endblock title %}
+
+{% block content %}
+  <h1>Главная страница SOVABET</h1>
+  <p>SOVABET — турнир прогнозистов, угадывающих призёров игр квиза "Кубок Совы".</p>
+  
+  {% if tournaments %}
+    <h3>Активные турниры</h3>
+    
+    {% for tournament in tournaments %}
+    <article>
+      <a href="{% url 'predictions:tournament_detail' tournament.pk %} ">
+        <h4>{{ tournament.name }}</h4>
+      </a>
+      <p><i><a href="{% url 'predictions:season_detail' tournament.season.pk %} ">Сезон {{ tournament.season.name }}</a></i></p>
+      <p>{{ tournament.info }}</p>
+    </article>
+    {% endfor %}
+      
+  {% else %}
+    <h3>Нет активных турниров</h3>
+  {% endif %}
+    
+{% endblock content %}

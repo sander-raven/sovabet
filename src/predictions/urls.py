@@ -5,13 +5,13 @@ from predictions.views import (
     SeasonListView,
     TournamentDetailView,
     TournamentListView,
-    home,
+    home_view,
 )
 
 
 app_name = "predictions"
 urlpatterns = [
-    path("", home, name="home"),
+    path("", home_view, name="home"),
     path(
         "season/<str:pk>/",
         SeasonDetailView.as_view(),

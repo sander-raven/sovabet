@@ -1,15 +1,16 @@
 from typing import Any, Dict
 
 from django.db.models.aggregates import Count, Sum
-from django.shortcuts import redirect
+from django.shortcuts import render
 from django.views.generic import DetailView, ListView
 
 from predictions.models import Prediction, Season, Tournament
 
 
-def home(request):
-    tournament = Tournament.objects.filter(is_active=True).first()
-    return redirect(tournament)
+def home_view(request):
+    tournaments = Tournament.objects.filter(is_active=True)
+    context = {"tournaments": tournaments}
+    return render(request, "predictions/home.html", context)
 
 
 class SeasonListView(ListView):
