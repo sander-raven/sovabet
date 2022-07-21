@@ -99,6 +99,11 @@ class Game(StartedAtAbstractModel):
     def __str__(self) -> str:
         return f"{self.name} :: {self.tournament}"
 
+    def get_absolute_url(self):
+        return reverse(
+            "predictions:game_detail", kwargs={"pk": self.pk}
+        )
+
 
 class Performance(BaseAbstractModel):
     game = models.ForeignKey(
