@@ -2,25 +2,25 @@
 {% load tz %}
 
 {% block title %}
-  Турнир {{ object.name }}
+  Игра {{ object.name }}
 {% endblock title %}
 
 {% block content %}
-  <h2>Турнир {{ object.name }}</h2>
-  <p><i><a href="{% url 'predictions:season_detail' object.season.pk %} ">Сезон {{ object.season.name }}</a></i></p>
+  <h2>Игра {{ object.name }}</h2>
+  <p><i><a href="{% url 'predictions:tournament_detail' object.tournament.pk %} ">Турнир {{ object.tournament.name }}</a></i></p>
 
   {% if object.info %}
     <p>{{ object.info }}</p>
   {% endif %}
   <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
 
-  <h3>Список игр</h3>
+  <h3>Призёры</h3>
   <details>
     <summary>Развернуть</summary>
     <ol>
-    {% for game in games %}
+    {% for performance in prize_performances %}
       <li>
-        <a href="{% url 'predictions:game_detail' game.pk %}">{{ game.name }}</a>
+        {{ performance.team.name }}
       </li>
     {% endfor %}
     </ol>

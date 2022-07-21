@@ -1,6 +1,7 @@
 from django.urls import path
 
 from predictions.views import (
+    GameDetailView,
     SeasonDetailView,
     SeasonListView,
     TournamentDetailView,
@@ -24,4 +25,9 @@ urlpatterns = [
         name="tournament_detail"
     ),
     path("tournament/", TournamentListView.as_view(), name="tournament_list"),
+    path(
+        "game/<str:pk>/",
+        GameDetailView.as_view(),
+        name="game_detail"
+    ),
 ]
