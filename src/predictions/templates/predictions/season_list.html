@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tz %}
 
 {% block title %}
   Список сезонов
@@ -13,7 +14,7 @@
         <h4>{{ object.name }}</h4>
       </a>
       <p>{{ object.info }}</p>
-      
+      <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
       {% if object.is_active %}
         <p><i>Идёт</i></p>
       {% else %}

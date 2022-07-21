@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tz %}
 
 {% block title %}
   Турнир {{ object.name }}
@@ -11,6 +12,7 @@
   {% if object.info %}
     <p>{{ object.info }}</p>
   {% endif %}
+  <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
 
   {% include 'predictions/inc/standings.html' %}
 {% endblock content %}

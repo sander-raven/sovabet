@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tz %}
 
 {% block title %}
   Главная страница
@@ -18,6 +19,7 @@
       </a>
       <p><i><a href="{% url 'predictions:season_detail' tournament.season.pk %} ">Сезон {{ tournament.season.name }}</a></i></p>
       <p>{{ tournament.info }}</p>
+      <p>Начало: {{ tournament.started_at|timezone:"Europe/Moscow" }} (мск)</p>
     </article>
     {% endfor %}
       
