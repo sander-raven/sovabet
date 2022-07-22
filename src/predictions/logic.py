@@ -4,7 +4,9 @@
 from collections import namedtuple
 from enum import Enum
 
+from django.db.models.aggregates import Count, Sum
 from django.db.models.query import QuerySet
+from django.db.models.query_utils import Q
 
 from predictions.models import (
     Game,
@@ -150,6 +152,43 @@ def get_ranked_performances(
     )
 
     return RankedPerformances(*prep_performances)
+
+
+def get_standings_for_object(
+    object: Season | Tournament | Game
+) -> QuerySet[Prediction] | None:
+    """Returns standings for an object of a certain class.
+    Else returns None.
+    """
+    if object.__class__ == Season:
+        fltr = Q(game__tournament__season=object)
+    elif object.__class__ == Tournament:
+        fltr = Q(game__tournament=object)
+    elif object.__class__ == Game:
+        fltr = Q(game=object)
+    else:
+        return None
+
+    standings = Prediction.objects\
+        .filter(fltr)\
+        .values("predictor__id", "predictor__name", "predictor__vk_id")\
+        .annotate(
+            count=Count("pk"),
+            prize_winners=Sum("prize_winners"),
+            third_places=Sum("third_places"),
+            runners_up=Sum("runners_up"),
+            winners=Sum("winners"),
+            total_points=Sum("total_points"),
+        ).order_by(
+            "-total_points",
+            "count",
+            "-winners",
+            "-runners_up",
+            "-third_places",
+            "-prize_winners",
+            "predictor__name",
+        )
+    return standings
 
 
 # Results manipulation

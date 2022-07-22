@@ -1,11 +1,13 @@
 from typing import Any, Dict
 
-from django.db.models.aggregates import Count, Sum
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
-from predictions.logic import get_not_null_performances_for_game
+from predictions.logic import (
+    get_not_null_performances_for_game,
+    get_standings_for_object,
+)
 
-from predictions.models import Game, Prediction, Season, Tournament
+from predictions.models import Game, Season, Tournament
 
 
 def home_view(request):
@@ -25,25 +27,7 @@ class SeasonDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        standings = Prediction.objects\
-            .filter(game__tournament__season=self.object)\
-            .values("predictor__id", "predictor__name", "predictor__vk_id")\
-            .annotate(
-                count=Count("pk"),
-                prize_winners=Sum("prize_winners"),
-                third_places=Sum("third_places"),
-                runners_up=Sum("runners_up"),
-                winners=Sum("winners"),
-                total_points=Sum("total_points"),
-            ).order_by(
-                "-total_points",
-                "count",
-                "-winners",
-                "-runners_up",
-                "-third_places",
-                "-prize_winners",
-                "predictor__name",
-            )
+        standings = get_standings_for_object(self.object)
         context["standings"] = standings
         tournaments = Tournament.objects.filter(season=self.object)
         context["tournaments"] = tournaments
@@ -61,25 +45,7 @@ class TournamentDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        standings = Prediction.objects\
-            .filter(game__tournament=self.object)\
-            .values("predictor__id", "predictor__name", "predictor__vk_id")\
-            .annotate(
-                count=Count("pk"),
-                prize_winners=Sum("prize_winners"),
-                third_places=Sum("third_places"),
-                runners_up=Sum("runners_up"),
-                winners=Sum("winners"),
-                total_points=Sum("total_points"),
-            ).order_by(
-                "-total_points",
-                "count",
-                "-winners",
-                "-runners_up",
-                "-third_places",
-                "-prize_winners",
-                "predictor__name",
-            )
+        standings = get_standings_for_object(self.object)
         context["standings"] = standings
         games = Game.objects.filter(tournament=self.object)
         context["games"] = games
@@ -92,25 +58,7 @@ class GameDetailView(DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        standings = Prediction.objects\
-            .filter(game=self.object)\
-            .values("predictor__id", "predictor__name", "predictor__vk_id")\
-            .annotate(
-                count=Count("pk"),
-                prize_winners=Sum("prize_winners"),
-                third_places=Sum("third_places"),
-                runners_up=Sum("runners_up"),
-                winners=Sum("winners"),
-                total_points=Sum("total_points"),
-            ).order_by(
-                "-total_points",
-                "count",
-                "-winners",
-                "-runners_up",
-                "-third_places",
-                "-prize_winners",
-                "predictor__name",
-            )
+        standings = get_standings_for_object(self.object)
         context["standings"] = standings
         prize_performances = get_not_null_performances_for_game(self.object)
         context["prize_performances"] = prize_performances
