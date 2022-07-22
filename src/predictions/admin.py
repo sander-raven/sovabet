@@ -97,6 +97,42 @@ class PredictorResource(BaseAbstractResource):
         fields = ("id", "name", "info", "vk_id")
 
 
+class RawPredictionResource(BaseAbstractResource):
+    text = resources.Field(
+        attribute="text",
+        column_name="text",
+        widget=resources.widgets.CharWidget(),
+        default="",
+    )
+    winner = resources.Field(
+        attribute="winner",
+        column_name="winner",
+        widget=resources.widgets.CharWidget(),
+        default="",
+    )
+    runner_up = resources.Field(
+        attribute="runner_up",
+        column_name="runner_up",
+        widget=resources.widgets.CharWidget(),
+        default="",
+    )
+    third_place = resources.Field(
+        attribute="third_place",
+        column_name="third_place",
+        widget=resources.widgets.CharWidget(),
+        default="",
+    )
+    note = resources.Field(
+        attribute="note",
+        column_name="note",
+        widget=resources.widgets.CharWidget(),
+        default="",
+    )
+
+    class Meta:
+        model = RawPrediction
+
+
 # Admin models
 
 class BaseAbstractAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
@@ -306,7 +342,9 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
 
 
 @admin.register(RawPrediction)
-class RawPredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
+class RawPredictionAdmin(
+    ImportExportMixin, ActiveFilterAdminMixin, admin.ModelAdmin
+):
     list_display = (
         "name",
         "game",
@@ -354,4 +392,6 @@ class RawPredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         }),
     )
     readonly_fields = ("id", "created_at", "updated_at")
+    ordering = ("-created_at", )
+    resource_class = RawPredictionResource
     actions = (make_active, make_inactive)
