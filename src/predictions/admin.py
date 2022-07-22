@@ -17,6 +17,7 @@ from predictions.models import (
     Prediction,
     PredictionEvent,
     Predictor,
+    RawPrediction,
     Season,
     Team,
     Tournament,
@@ -302,3 +303,55 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
             self.message_user(request, "Результаты прогноза сброшены.")
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+
+@admin.register(RawPrediction)
+class RawPredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
+    list_display = (
+        "name",
+        "game",
+        "winner",
+        "runner_up",
+        "third_place",
+        "note",
+        "is_active",
+    )
+    list_display_links = (
+        "name",
+        "game",
+        "winner",
+        "runner_up",
+        "third_place",
+        "note",
+    )
+    search_fields = (
+        "name",
+        "game",
+        "winner",
+        "runner_up",
+        "third_place",
+        "note",
+        "text",
+        "vk_id",
+    )
+    fieldsets = (
+        ("Информация о записи", {
+            "fields": ("id", "created_at", "updated_at", "is_active")
+        }),
+        ("Информация о прогнозисте", {
+            "fields": ("name", "vk_id")
+        }),
+        ("Информация о прогнозе", {
+            "fields": (
+                "timestamp",
+                "text",
+                "game",
+                "winner",
+                "runner_up",
+                "third_place",
+                "note",
+            )
+        }),
+    )
+    readonly_fields = ("id", "created_at", "updated_at")
+    actions = (make_active, make_inactive)

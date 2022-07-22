@@ -198,3 +198,25 @@ class PredictionEvent(BaseAbstractModel):
 
     def __str__(self) -> str:
         return f"{self.team} >> {self.result}"
+
+
+class RawPrediction(BaseAbstractModel):
+    """Raw prediction to be processed further."""
+    name = models.CharField("имя", max_length=50)
+    vk_id = models.IntegerField("VK ID", blank=True, null=True)
+    timestamp = models.IntegerField(
+        "метка времени", blank=True, null=True
+    )
+    text = models.TextField("текст", blank=True)
+    game = models.CharField("игра", max_length=50)
+    winner = models.CharField("победитель", max_length=50, blank=True)
+    runner_up = models.CharField("второй призёр", max_length=50, blank=True)
+    third_place = models.CharField("третий призёр", max_length=50, blank=True)
+    note = models.TextField("примечание", blank=True)
+
+    class Meta:
+        verbose_name = "сырой прогноз"
+        verbose_name_plural = "сырые прогнозы"
+    
+    def __str__(self) -> str:
+        return f"Сырой прогноз {self.name} на игру {self.game}"
