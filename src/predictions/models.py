@@ -204,7 +204,7 @@ class RawPrediction(BaseAbstractModel):
     """Raw prediction to be processed further."""
     name = models.CharField("имя", max_length=50)
     vk_id = models.IntegerField("VK ID", blank=True, null=True)
-    timestamp = models.IntegerField(
+    timestamp = models.FloatField(
         "метка времени", blank=True, null=True
     )
     text = models.TextField("текст", blank=True)
