@@ -1,20 +1,28 @@
 """Application Business Logic."""
 
 
+import uuid
 from collections import namedtuple
+from datetime import datetime
 from enum import Enum
+from typing import Any
 
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db.models.aggregates import Count, Sum
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
+from django.utils.timezone import make_aware
 
 from predictions.models import (
     Game,
     Performance,
     Prediction,
     PredictionEvent,
+    Predictor,
+    RawPrediction,
     Result,
     Season,
+    Team,
     Tournament,
 )
 
@@ -189,6 +197,145 @@ def get_standings_for_object(
             "predictor__name",
         )
     return standings
+
+
+# Processing raw predictions
+
+def write_note_and_save(raw_prediction: RawPrediction, note: str) -> None:
+    raw_prediction.note = note
+    raw_prediction.save()
+
+
+def is_valid_uuid(value: Any) -> bool:
+    """Returns True if the value is UUID. False otherwise."""
+    try:
+        uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
+
+
+def get_game_by_uuid_or_name(uuid_or_name: str) -> Game | None:
+    if is_valid_uuid(uuid_or_name):
+        game_fltr = Q(pk=uuid_or_name)
+    else:
+        game_fltr = Q(name__iexact=uuid_or_name)
+    try:
+        game = Game.objects.get(game_fltr)
+    except (MultipleObjectsReturned, ObjectDoesNotExist):
+        return None
+    else:
+        return game
+
+
+def get_predictor_or_create(name: str, vk_id: int = None) -> Predictor | None:
+    if vk_id:
+        try:
+            predictor_by_vk_id = Predictor.objects.get(vk_id=vk_id)
+        except ObjectDoesNotExist:
+            pass
+        else:
+            return predictor_by_vk_id
+    predictors_by_name = Predictor.objects.filter(name__iexact=name)
+    predictors_count = predictors_by_name.count()
+    if predictors_count == 1:
+        return predictors_by_name[0]
+    elif predictors_count > 1:
+        return None
+    else:
+        try:
+            new_predictor = Predictor.objects.create(name=name, vk_id=vk_id)
+        except Exception:
+            new_predictor = None
+        return new_predictor
+
+
+def create_prediction_event(
+    team_name: str, prediction: Prediction, result: Result
+) -> None:
+    if team_name:
+        try:
+            team = Team.objects.get(name__iexact=team_name)
+        except (MultipleObjectsReturned, ObjectDoesNotExist):
+            return None
+        else:
+            PredictionEvent.objects.create(
+                prediction=prediction,
+                team=team,
+                result=result,
+            )
+
+
+def process_raw_predictions(
+    raw_predictions: QuerySet[RawPrediction] = None
+) -> tuple[int, int]:
+    """Processes raw predictions.
+    Creates predictions based on them.
+
+    Returns a tuple with two int values:
+    - number of successfully processed;
+    - total number of original raw predictions.
+    """
+    if raw_predictions is None:
+        raw_predictions = RawPrediction.objects.filter(is_active=True)
+    
+    total_rp = len(raw_predictions)
+    successful_rp = 0
+    
+    for rp in raw_predictions:
+        game = get_game_by_uuid_or_name(rp.game)
+        if game is None:
+            write_note_and_save(
+                rp,
+                "Ошибка: не найдена связанная игра!"
+            )
+            continue
+
+        predictor = get_predictor_or_create(rp.name, rp.vk_id)
+        if predictor is None:
+            write_note_and_save(
+                rp, 
+                "Ошибка: не найден прогнозист, и не создан новый!"
+            )
+            continue
+        
+        prediction = Prediction.objects.filter(game=game, predictor=predictor)
+        if prediction:
+            write_note_and_save(
+                rp,
+                "Ошибка: прогноз от этого пользователя на эту игру"
+                " уже существует!"
+            )
+            continue
+
+        is_active = True
+        if rp.timestamp:
+            rp_datetime = make_aware(datetime.utcfromtimestamp(rp.timestamp))
+            if game.started_at < rp_datetime:
+                is_active = False
+        try:
+            prediction = Prediction.objects.create(
+                game=game, predictor=predictor, is_active=is_active
+            )
+        except Exception as error:
+            write_note_and_save(
+                rp,
+                f"Ошибка: не удалось создать прогноз! {error}"
+            )
+            continue
+
+        create_prediction_event(rp.winner, prediction, Result.WINNER)
+        create_prediction_event(rp.runner_up, prediction, Result.RUNNER_UP)
+        create_prediction_event(rp.third_place, prediction, Result.THIRD_PLACE)
+
+        rp.is_active = False
+        note = "Создан"
+        if not is_active:
+            note += ". Неактивен"
+        write_note_and_save(rp, note)
+        successful_rp += 1
+
+    return (successful_rp, total_rp)
 
 
 # Results manipulation
