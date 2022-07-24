@@ -405,7 +405,7 @@ def calculate_prediction(
 def calculate_game_predictions(game: Game) -> None:
     performances = get_not_null_performances_for_game(game)
     ranked_performances = get_ranked_performances(performances)
-    predictions = get_game_predictions(game, is_active=True)
+    predictions = get_game_predictions(game)
 
     for prediction in predictions:
         calculate_prediction(prediction, ranked_performances)
@@ -426,7 +426,7 @@ def reset_prediction(prediction: Prediction) -> None:
 
 
 def reset_game_predictions(game: Game) -> None:
-    predictions = get_game_predictions(game, is_active=True)
+    predictions = get_game_predictions(game)
     for prediction in predictions:
         reset_prediction(prediction)
 
