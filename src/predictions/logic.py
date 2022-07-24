@@ -169,16 +169,16 @@ def get_standings_for_object(
     Else returns None.
     """
     if object.__class__ == Season:
-        fltr = Q(game__tournament__season=object)
+        object_fltr = Q(game__tournament__season=object)
     elif object.__class__ == Tournament:
-        fltr = Q(game__tournament=object)
+        object_fltr = Q(game__tournament=object)
     elif object.__class__ == Game:
-        fltr = Q(game=object)
+        object_fltr = Q(game=object)
     else:
         return None
 
     standings = Prediction.objects\
-        .filter(fltr)\
+        .filter(object_fltr, is_active=True)\
         .values("predictor__id", "predictor__name", "predictor__vk_id")\
         .annotate(
             count=Count("pk"),
