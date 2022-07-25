@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.urls import path
 from import_export import resources
 from import_export.admin import ImportExportMixin
 
@@ -46,8 +47,8 @@ def make_inactive(modeladmin, request, queryset):
 
 @admin.action(description="Обработать выбранные сырые прогнозы")
 def process_selected_raw_predictions(modeladmin, request, queryset):
-    succesful, total = process_raw_predictions(queryset)
-    modeladmin.message_user(request, f"Создано прогнозов: {succesful} из {total}")
+    successful, total = process_raw_predictions(queryset)
+    modeladmin.message_user(request, f"Создано прогнозов: {successful} из {total}")
 
 
 # Mixins
@@ -388,3 +389,16 @@ class RawPredictionAdmin(
     ordering = ("-created_at", )
     resource_class = RawPredictionResource
     actions = (make_active, make_inactive, process_selected_raw_predictions)
+    change_list_template = "predictions/rawpredictions_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        extra_urls = [
+            path("process/", self.process_raw_predictions),
+        ]
+        return extra_urls + urls
+
+    def process_raw_predictions(self, request):
+        successful, total = process_raw_predictions()
+        self.message_user(request, f"Создано прогнозов: {successful} из {total}")
+        return HttpResponseRedirect("../")
