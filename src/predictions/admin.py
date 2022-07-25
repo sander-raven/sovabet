@@ -7,6 +7,7 @@ from predictions.logic import (
     calculate_game_predictions,
     calculate_prediction,
     calculate_tournament_predictions,
+    process_raw_predictions,
     reset_game_predictions,
     reset_prediction,
     reset_tournament_predictions,
@@ -41,6 +42,12 @@ def make_active(modeladmin, request, queryset):
 def make_inactive(modeladmin, request, queryset):
     queryset.update(is_active=False)
     modeladmin.message_user(request, 'Выбранные записи сделаны неактивными')
+
+
+@admin.action(description="Обработать выбранные сырые прогнозы")
+def process_selected_raw_predictions(modeladmin, request, queryset):
+    succesful, total = process_raw_predictions(queryset)
+    modeladmin.message_user(request, f"Создано прогнозов: {succesful} из {total}")
 
 
 # Mixins
@@ -395,4 +402,4 @@ class RawPredictionAdmin(
     readonly_fields = ("id", "created_at", "updated_at")
     ordering = ("-created_at", )
     resource_class = RawPredictionResource
-    actions = (make_active, make_inactive)
+    actions = (make_active, make_inactive, process_selected_raw_predictions)
