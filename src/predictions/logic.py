@@ -315,7 +315,10 @@ def process_raw_predictions(
                 is_active = False
         try:
             prediction = Prediction.objects.create(
-                game=game, predictor=predictor, is_active=is_active
+                game=game,
+                predictor=predictor,
+                is_active=is_active,
+                datetime=rp_datetime,
             )
         except Exception as error:
             write_note_and_save(
