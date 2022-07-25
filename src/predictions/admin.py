@@ -286,22 +286,6 @@ class PredictionEventInline(admin.TabularInline):
     max_num = 3
     readonly_fields = ("points", )
 
-    def get_formset(self, request, obj=None, **kwargs):
-        self.parent_obj = obj
-        return super(PredictionEventInline, self).get_formset(
-            request, obj, **kwargs
-        )
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "team":
-            if self.parent_obj and self.parent_obj.game:
-                kwargs["queryset"] = Team.objects.filter(
-                    games=self.parent_obj.game
-                )
-            else:
-                kwargs["queryset"] = Team.objects.none()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 @admin.register(Prediction)
 class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
