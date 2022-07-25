@@ -334,6 +334,7 @@ class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
         "game": Game,
     }
     inlines = (PredictionEventInline, )
+    ordering = ("-datetime", "-created_at")
     actions = (make_active, make_inactive)
     change_form_template = "predictions/prediction_changeform.html"
 
