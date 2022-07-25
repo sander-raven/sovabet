@@ -276,12 +276,14 @@ def process_raw_predictions(
     - number of successfully processed;
     - total number of original raw predictions.
     """
-    if raw_predictions is None:
+    if raw_predictions:
+        raw_predictions = raw_predictions.filter(is_active=True)
+    else:
         raw_predictions = RawPrediction.objects.filter(is_active=True)
-    
+
     total_rp = len(raw_predictions)
     successful_rp = 0
-    
+
     for rp in raw_predictions:
         game = get_game_by_uuid_or_name(rp.game)
         if game is None:
@@ -294,11 +296,11 @@ def process_raw_predictions(
         predictor = get_predictor_or_create(rp.name, rp.vk_id)
         if predictor is None:
             write_note_and_save(
-                rp, 
+                rp,
                 "Ошибка: не найден прогнозист, и не создан новый!"
             )
             continue
-        
+
         prediction = Prediction.objects.filter(game=game, predictor=predictor)
         if prediction:
             write_note_and_save(
@@ -361,7 +363,7 @@ def calculate_prediction(
     if not ranked_performances:
         performances = get_not_null_performances_for_game(prediction.game)
         ranked_performances = get_ranked_performances(performances)
-    
+
     prediction_events = get_prediction_events(prediction)
     events = [
         event for event in prediction_events
@@ -382,8 +384,8 @@ def calculate_prediction(
         if performance:
             full_hit = [
                 event for event in events
-                if event.result==performance.result and
-                event.team==performance.team
+                if event.result == performance.result and
+                event.team == performance.team
             ]
             if full_hit:
                 full_hit[0].points = ranked_performance.get("points")
@@ -392,7 +394,7 @@ def calculate_prediction(
             else:
                 prizes_hit = [
                     event for event in events
-                    if event.team==performance.team
+                    if event.team == performance.team
                 ]
                 if prizes_hit:
                     prizes_hit[0].points = Points.TEAM_WAS_AWARDED.value
