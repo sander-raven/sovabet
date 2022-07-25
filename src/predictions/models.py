@@ -157,6 +157,7 @@ class Prediction(BaseAbstractModel):
         related_name="predictions",
         verbose_name="игра",
     )
+    datetime = models.DateTimeField("дата и время", blank=True, null=True)
     total_points = models.FloatField("сумма баллов", default=0.0)
     winners = models.IntegerField("угадано победителей", default=0)
     runners_up = models.IntegerField("угадано вторых призёров", default=0)
@@ -168,6 +169,7 @@ class Prediction(BaseAbstractModel):
     class Meta:
         verbose_name = "прогноз"
         verbose_name_plural = "прогнозы"
+        ordering = ("-datetime", "-created_at")
 
     def __str__(self) -> str:
         return f"Прогноз {self.predictor} на игру {self.game}"

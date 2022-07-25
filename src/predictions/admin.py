@@ -298,11 +298,12 @@ class PredictionEventInline(admin.TabularInline):
 
 @admin.register(Prediction)
 class PredictionAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
-    list_display = ("__str__", "id", "total_points", "is_active")
+    list_display = ("__str__", "id", "datetime", "total_points", "is_active")
     search_fields = ("predictor__name", "game__name")
     fields = (
         "predictor",
         "game",
+        "datetime",
         "total_points",
         "winners",
         "runners_up",
