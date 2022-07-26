@@ -25,6 +25,7 @@ from predictions.models import (
     Team,
     Tournament,
 )
+from predictions.vk_api import get_vk_api, get_vk_comments
 
 
 # Helper classes
@@ -341,6 +342,54 @@ def process_raw_predictions(
         successful_rp += 1
 
     return (successful_rp, total_rp)
+
+
+def get_profiles(response: dict) -> dict[int, str]:
+    profiles = response.get("profiles", [])
+    return {
+        profile.get("id"):
+        f"{profile.get('first_name')} {profile.get('last_name')}"
+        for profile in profiles
+    }
+
+
+def get_comments(response: dict) -> list[dict[str, Any]]:
+    comments = response.get("items", [])
+    return comments
+
+
+def get_predictors_comments(game: Game) -> list[list[Any]] | None:
+    if not game.vk_post_id:
+        return None
+    api = get_vk_api()
+    response = get_vk_comments(game.vk_post_id, api=api)
+    if response:
+        profiles = get_profiles(response)
+        comments = get_comments(response)
+        output = [
+            [
+                "game",
+                "name",
+                "vk_id",
+                "timestamp",
+                "text",
+                "winner",
+                "runner_up",
+                "third_place",
+                "id",
+            ]
+        ]
+        for comment in comments:
+            vk_id = comment.get("from_id")
+            comment_items = [
+                game.name,
+                profiles.get(vk_id),
+                vk_id,
+                comment.get("date"),
+                comment.get("text"),
+            ]
+            output.append(comment_items)
+        return output
 
 
 # Results manipulation
