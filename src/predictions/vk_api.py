@@ -22,7 +22,7 @@ def get_comments(post_id: int, api: vk.API = None) -> dict[str, Any] | None:
         api = get_vk_api()
     try:
         comments = api.wall.getComments(
-            owner_id=VK_OWNER_ID, post_id=post_id, lang="ru"
+            owner_id=VK_OWNER_ID, post_id=post_id, count=100, lang="ru"
         )
     except VkAPIError:
         return None
