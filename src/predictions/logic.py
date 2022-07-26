@@ -358,38 +358,43 @@ def get_comments(response: dict) -> list[dict[str, Any]]:
     return comments
 
 
-def get_predictors_comments(game: Game) -> list[list[Any]] | None:
-    if not game.vk_post_id:
-        return None
-    api = get_vk_api()
-    response = get_vk_comments(game.vk_post_id, api=api)
-    if response:
-        profiles = get_profiles(response)
-        comments = get_comments(response)
-        output = [
-            [
-                "game",
-                "name",
-                "vk_id",
-                "timestamp",
-                "text",
-                "winner",
-                "runner_up",
-                "third_place",
-                "id",
-            ]
+def get_predictors_comments(games: QuerySet[Game]) -> list[list[Any]]:
+    output = [
+        [
+            "game",
+            "name",
+            "vk_id",
+            "timestamp",
+            "text",
+            "winner",
+            "runner_up",
+            "third_place",
+            "id",
         ]
-        for comment in comments:
-            vk_id = comment.get("from_id")
-            comment_items = [
-                game.name,
-                profiles.get(vk_id),
-                vk_id,
-                comment.get("date"),
-                comment.get("text"),
-            ]
-            output.append(comment_items)
-        return output
+    ]
+
+    api = get_vk_api()
+
+    for game in games:
+        if not game.vk_post_id:
+            continue
+
+        response = get_vk_comments(game.vk_post_id, api=api)
+        if response:
+            profiles = get_profiles(response)
+            comments = get_comments(response)
+            for comment in comments:
+                vk_id = comment.get("from_id")
+                comment_items = [
+                    game.name,
+                    profiles.get(vk_id),
+                    vk_id,
+                    comment.get("date"),
+                    comment.get("text"),
+                ]
+                output.append(comment_items)
+
+    return output
 
 
 # Results manipulation
