@@ -1,8 +1,9 @@
 """The module for working with VK API."""
 
-from typing import Any
+from typing import Any, Iterable
 
 import vk
+from vk.exceptions import VkAPIError
 
 from sovabet.settings import (
     VK_ACCESS_TOKEN,
@@ -16,12 +17,25 @@ def get_vk_api():
     return api
 
 
-def get_comments(post_id: int) -> dict[str, Any] | None:
-    api = get_vk_api()
+def get_comments(post_id: int, api: vk.API = None) -> dict[str, Any] | None:
+    if api is None:
+        api = get_vk_api()
     try:
         comments = api.wall.getComments(
             owner_id=VK_OWNER_ID, post_id=post_id, lang="ru"
         )
-    except:
+    except VkAPIError:
         return None
     return comments
+
+
+def get_users(
+    user_ids: Iterable[int], api: vk.API = None
+) -> list[dict[str, Any]] | None:
+    if api is None:
+        api = get_vk_api()
+    try:
+        users = api.users.get(user_ids=user_ids, lang="ru")
+    except VkAPIError:
+        return None
+    return users
