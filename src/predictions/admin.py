@@ -391,7 +391,7 @@ class RawPredictionAdmin(
     ordering = ("-created_at", )
     resource_class = RawPredictionResource
     actions = (make_active, make_inactive, process_selected_raw_predictions)
-    change_list_template = "predictions/rawpredictions_changelist.html"
+    # change_list_template = "predictions/rawpredictions_changelist.html"
 
     def get_urls(self):
         urls = super().get_urls()
