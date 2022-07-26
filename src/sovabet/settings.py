@@ -134,3 +134,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # django-import-export
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+
+# VK API
+VK_ACCESS_TOKEN = env('VK_ACCESS_TOKEN')
+VK_API_VERSION = env('VK_API_VERSION')
+VK_OWNER_ID = env('VK_OWNER_ID')
