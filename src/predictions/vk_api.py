@@ -19,7 +19,9 @@ def get_vk_api():
 def get_comments(post_id: int) -> dict[str, Any] | None:
     api = get_vk_api()
     try:
-        comments = api.wall.getComments(owner_id=VK_OWNER_ID, post_id=post_id)
+        comments = api.wall.getComments(
+            owner_id=VK_OWNER_ID, post_id=post_id, lang="ru"
+        )
     except:
         return None
     return comments
