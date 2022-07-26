@@ -17,16 +17,31 @@ def get_vk_api():
     return api
 
 
-def get_comments(post_id: int, api: vk.API = None) -> dict[str, Any] | None:
+def get_comments(
+    post_id: int, api: vk.API = None, extended: bool = True
+) -> dict[str, Any] | None:
     if api is None:
         api = get_vk_api()
     try:
-        comments = api.wall.getComments(
-            owner_id=VK_OWNER_ID, post_id=post_id, count=100, lang="ru"
-        )
+        if extended:
+            response = api.wall.getComments(
+                owner_id=VK_OWNER_ID,
+                post_id=post_id,
+                count=100,
+                lang="ru",
+                extended=1,
+                fields="first_name,last_name",
+            )
+        else:
+            response = api.wall.getComments(
+                owner_id=VK_OWNER_ID,
+                post_id=post_id,
+                count=100,
+                lang="ru",
+            )
     except VkAPIError:
         return None
-    return comments
+    return response
 
 
 def get_users(
