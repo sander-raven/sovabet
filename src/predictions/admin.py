@@ -1,5 +1,8 @@
+import csv
+from datetime import datetime
+
 from django.contrib import admin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import path
 from import_export import resources
 from import_export.admin import ImportExportMixin
@@ -8,6 +11,7 @@ from predictions.logic import (
     calculate_game_predictions,
     calculate_prediction,
     calculate_tournament_predictions,
+    get_predictors_comments,
     process_raw_predictions,
     reset_game_predictions,
     reset_prediction,
@@ -48,7 +52,26 @@ def make_inactive(modeladmin, request, queryset):
 @admin.action(description="Обработать выбранные сырые прогнозы")
 def process_selected_raw_predictions(modeladmin, request, queryset):
     successful, total = process_raw_predictions(queryset)
-    modeladmin.message_user(request, f"Создано прогнозов: {successful} из {total}")
+    modeladmin.message_user(
+        request, f"Создано прогнозов: {successful} из {total}"
+    )
+
+
+@admin.action(
+    description="Собрать и сохранить в csv комментарии для выбранных игр"
+)
+def create_csv_from_vk(modeladmin, request, queryset):
+    filename = f"comments_from_vk_{int(datetime.utcnow().timestamp())}.csv"
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
+    output = get_predictors_comments(queryset.order_by("started_at"))
+
+    writer = csv.writer(response)
+    for line in output:
+        writer.writerow(line)
+
+    return response
 
 
 # Mixins
@@ -250,6 +273,7 @@ class GameAdmin(ImportExportMixin, StartedAtAdmin):
     inlines = (PerformanceInLine, )
     resource_class = GameResource
     change_form_template = "predictions/game_changeform.html"
+    actions = (make_active, make_inactive, create_csv_from_vk)
 
     def response_change(self, request, obj):
         if "_calculate" in request.POST:
@@ -402,5 +426,7 @@ class RawPredictionAdmin(
 
     def process_raw_predictions(self, request):
         successful, total = process_raw_predictions()
-        self.message_user(request, f"Создано прогнозов: {successful} из {total}")
+        self.message_user(
+            request, f"Создано прогнозов: {successful} из {total}"
+        )
         return HttpResponseRedirect("../")
