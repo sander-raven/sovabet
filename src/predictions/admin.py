@@ -232,10 +232,12 @@ class GameAdmin(ImportExportMixin, StartedAtAdmin):
     search_fields = (
         "id", "name", "info", "tournament__name", "tournament__info"
     )
+    list_display = ("__str__", "started_at", "id", "vk_post_id", "is_active")
     fields = (
         "id",
         "name",
         "info",
+        "vk_post_id",
         "tournament",
         "started_at",
         "is_active",

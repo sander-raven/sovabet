@@ -91,6 +91,7 @@ class Game(StartedAtAbstractModel):
         verbose_name="команды",
         through="Performance",
     )
+    vk_post_id = models.IntegerField("ID поста", blank=True, null=True, unique=True)
 
     class Meta:
         verbose_name = "игра"
