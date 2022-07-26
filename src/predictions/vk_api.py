@@ -17,7 +17,7 @@ def get_vk_api():
     return api
 
 
-def get_comments(
+def get_vk_comments(
     post_id: int, api: vk.API = None, extended: bool = True
 ) -> dict[str, Any] | None:
     if api is None:
@@ -44,7 +44,7 @@ def get_comments(
     return response
 
 
-def get_users(
+def get_vk_users(
     user_ids: Iterable[int], api: vk.API = None
 ) -> list[dict[str, Any]] | None:
     if api is None:
