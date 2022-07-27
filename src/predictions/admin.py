@@ -118,7 +118,7 @@ class GameResource(BaseAbstractResource):
 
     class Meta:
         model = Game
-        fields = ("id", "name", "info", "tournament")
+        fields = ("id", "name", "info", "tournament", "vk_post_id")
 
 
 class PredictorResource(BaseAbstractResource):
