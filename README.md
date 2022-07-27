@@ -2,16 +2,16 @@
 Система учёта турнира прогнозистов "Совабет" квиза "Кубок Совы".
 
 ## Используемые технологии
-Язык программирования:
-- Python 3.10
-
-Сторонние библиотеки:
-- Django
-- django-environ
-- django-import-export
-- gunicorn
-- psycopg2-binary
-- vk
+- Бэкенд:
+    - Python 3.10
+        - vk
+    - Django 4.0.6
+        - django-environ
+        - django-import-export
+    - PostgreSQL
+        - psycopg2-binary
+- Фронтенд:
+    - Simple.css
 
 ## Предварительные действия
 Создайте и активируйте виртуальное окружение в главной директории проекта `sovabet`:
