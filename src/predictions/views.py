@@ -5,6 +5,7 @@ from django.views.generic import DetailView, ListView
 from predictions.logic import (
     get_not_null_performances_for_game,
     get_standings_for_object,
+    get_tournament_games,
 )
 
 from predictions.models import Game, Season, Tournament
@@ -47,7 +48,7 @@ class TournamentDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         standings = get_standings_for_object(self.object)
         context["standings"] = standings
-        games = Game.objects.filter(tournament=self.object)
+        games = get_tournament_games(tournament=self.object)
         context["games"] = games
         return context
 

@@ -80,11 +80,12 @@ def get_tournament_games(
         - False - returns a queryset with inactive records.
     """
     if is_active is None:
-        games = Game.objects.filter(tournament=tournament)
+        games = Game.objects.filter(tournament=tournament)\
+            .order_by("started_at", "created_at")
     else:
         games = Game.objects.filter(
             tournament=tournament, is_active=is_active
-        )
+        ).order_by("started_at", "created_at")
     return games
 
 
