@@ -61,11 +61,12 @@ def get_season_tournaments(
         - False - returns a queryset with inactive records.
     """
     if is_active is None:
-        tournaments = Tournament.objects.filter(season=season)
+        tournaments = Tournament.objects.filter(season=season)\
+            .order_by("started_at", "created_at")
     else:
         tournaments = Tournament.objects.filter(
             season=season, is_active=is_active
-        )
+        ).order_by("started_at", "created_at")
     return tournaments
 
 
