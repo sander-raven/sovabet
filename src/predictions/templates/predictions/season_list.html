@@ -8,7 +8,7 @@
 {% block content %}
   <h2>Список сезонов</h2>
   
-  {% for object in object_list|dictsortreversed:"pk" %}
+  {% for object in object_list|dictsortreversed:"started_at" %}
     <article>
       <a href="{% url 'predictions:season_detail' object.pk %} ">
         <h4>{{ object.name }}</h4>
