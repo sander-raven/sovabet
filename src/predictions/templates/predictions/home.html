@@ -17,7 +17,7 @@
       <a href="{% url 'predictions:tournament_detail' tournament.pk %} ">
         <h4>{{ tournament.name }}</h4>
       </a>
-      <p><i><a href="{% url 'predictions:season_detail' tournament.season.pk %} ">Сезон {{ tournament.season.name }}</a></i></p>
+      <p><i><a href="{% url 'predictions:season_detail' tournament.season_id %} ">Сезон {{ tournament.season__name }}</a></i></p>
       <p>{{ tournament.info }}</p>
       <p>Начало: {{ tournament.started_at|timezone:"Europe/Moscow" }} (мск)</p>
     </article>

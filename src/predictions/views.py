@@ -13,7 +13,15 @@ from predictions.models import Game, Season, Tournament
 
 
 def home_view(request):
-    tournaments = Tournament.objects.filter(is_active=True)
+    tournaments = Tournament.objects.filter(is_active=True)\
+        .select_related("season").values(
+            "pk",
+            "name",
+            "info",
+            "started_at",
+            "season_id",
+            "season__name",
+    )
     context = {"tournaments": tournaments}
     return render(request, "predictions/home.html", context)
 
