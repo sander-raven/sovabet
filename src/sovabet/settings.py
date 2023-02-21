@@ -14,7 +14,6 @@ from pathlib import Path
 
 import environ
 
-
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
@@ -25,7 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
 environ.Env.read_env(BASE_DIR / '.env')
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -38,7 +36,6 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'predictions',
     'import_export',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -60,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'sovabet.urls'
@@ -82,14 +81,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sovabet.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
     'default': env.db_url(default=f'sqlite:///{BASE_DIR}/db.sqlite3')
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -109,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -120,7 +116,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -133,12 +128,14 @@ STATIC_ROOT = BASE_DIR / STATIC_URL
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # django-import-export
 IMPORT_EXPORT_USE_TRANSACTIONS = True
-
 
 # VK API
 VK_ACCESS_TOKEN = env('VK_ACCESS_TOKEN')
 VK_API_VERSION = env('VK_API_VERSION')
 VK_OWNER_ID = env('VK_OWNER_ID')
+
+
+if DEBUG:
+    INTERNAL_IPS = env('INTERNAL_IPS')
