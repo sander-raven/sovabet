@@ -48,6 +48,9 @@ class TournamentListView(ListView):
     model = Tournament
     template_name = "predictions/tournament_list.html"
 
+    def get_queryset(self):
+        return Tournament.objects.all().select_related("season")
+
 
 class TournamentDetailView(DetailView):
     model = Tournament
