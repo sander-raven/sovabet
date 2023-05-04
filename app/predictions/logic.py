@@ -440,8 +440,8 @@ def calculate_prediction(
         if performance:
             full_hit = [
                 event for event in events
-                if event.result == performance.result and
-                event.team == performance.team
+                if event.result == performance.result
+                and event.team == performance.team
             ]
             if full_hit:
                 full_hit[0].points = ranked_performance.get("points")

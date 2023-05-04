@@ -220,6 +220,6 @@ class RawPrediction(BaseAbstractModel):
     class Meta:
         verbose_name = "сырой прогноз"
         verbose_name_plural = "сырые прогнозы"
-    
+
     def __str__(self) -> str:
         return f"Сырой прогноз {self.name} на игру {self.game}"

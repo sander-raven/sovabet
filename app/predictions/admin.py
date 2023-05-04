@@ -85,7 +85,7 @@ class ActiveFilterAdminMixin:
             if model:
                 try:
                     kwargs["queryset"] = model.objects.filter(is_active=True)
-                except AttributeError as error:
+                except AttributeError:  # as error:
                     pass
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
