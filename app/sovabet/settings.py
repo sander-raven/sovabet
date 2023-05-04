@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -139,6 +138,9 @@ VK_ACCESS_TOKEN = os.environ.get('VK_ACCESS_TOKEN')
 VK_API_VERSION = os.environ.get('VK_API_VERSION')
 VK_OWNER_ID = os.environ.get('VK_OWNER_ID')
 
-
 if DEBUG:
-    INTERNAL_IPS = os.environ.get('DJANGO_INTERNAL_IPS', default='').split(' ')
+    import socket
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + \
+        os.environ.get('DJANGO_INTERNAL_IPS', default='').split(' ')
