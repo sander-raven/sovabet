@@ -1,31 +1,52 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="{% static "predictions/css/main.css" %}">
     <title>{% block title %}SOVABET{% endblock title %} :: SOVABET</title>
 </head>
 <body>
 
-  <header>
-    <h1>SOVABET</h1>
+<header>
     <nav>
-      <a href="{% url 'predictions:home' %}">Главная</a>
-      <a href="{% url 'predictions:season_list' %}">Сезоны</a>
-      <a href="{% url 'predictions:tournament_list' %}">Турниры</a>
+        <div class="nav-wrapper light-blue darken-4">
+            <a href="{% url 'predictions:home' %}" class="brand-logo center">SOVABET</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="{% url 'predictions:season_list' %}">Сезоны</a></li>
+                <li><a href="{% url 'predictions:tournament_list' %}">Турниры</a></li>
+            </ul>
+        </div>
     </nav>
-  </header>
+    <ul class="sidenav" id="mobile-demo">
+        <li><a href="{% url 'predictions:season_list' %}">Сезоны</a></li>
+        <li><a href="{% url 'predictions:tournament_list' %}">Турниры</a></li>
+    </ul>
+</header>
 
-  <main>
-    {% block content %}
-    {% endblock content %}
-  </main>
+<main>
+    <div class="container">
+        {% block content %}
+        {% endblock content %}
+    </div>
+</main>
 
-  <footer>
-    <p>&copy; <a href="https://vsemsov.com/" target="_blank">Кубок Совы</a>, {% now "Y" %}</p>
-    <p>&copy; <a href="https://github.com/sander-raven" target="_blank">Александр Аравин</a>, {% now "Y" %}</p>
-  </footer>
+<footer class="page-footer light-blue darken-4">
+    <div class="footer-copyright">
+        <div class="container">
+            <p>&copy; <a href="https://vsemsov.com/" target="_blank" class="blue-text text-lighten-4">Кубок
+                Совы</a>, {% now "Y" %}</p>
+            <p>&copy; <a href="https://github.com/sander-raven" target="_blank" class="blue-text text-lighten-4">Александр
+                Аравин</a>, {% now "Y" %}</p>
+        </div>
+    </div>
+</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="{% static "/predictions/js/main.js" %}"></script>
 </body>
 </html>
