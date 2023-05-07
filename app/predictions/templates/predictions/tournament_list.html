@@ -2,27 +2,35 @@
 {% load tz %}
 
 {% block title %}
-  Список турниров
+    Список турниров
 {% endblock title %}
 
 {% block content %}
-  <h2>Список турниров</h2>
-  
-  {% for object in object_list|dictsortreversed:"started_at" %}
-    <article>
-      <a href="{% url 'predictions:tournament_detail' object.pk %} ">
-        <h4>{{ object.name }}</h4>
-      </a>
-      <p><i><a href="{% url 'predictions:season_detail' object.season.pk %} ">Сезон {{ object.season.name }}</a></i></p>
-      <p>{{ object.info }}</p>
-      <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
-      {% if object.is_active %}
-        <p><i>Идёт</i></p>
-      {% else %}
-        <p><i>Завершён</i></p>
-      {% endif %}
-        
-    </article>
-  {% endfor %}
-    
+    <h2>Список турниров</h2>
+
+    {% for object in object_list|dictsortreversed:"started_at" %}
+        <div class="row">
+            <div class="col s12 m6">
+                <div class="card blue darken-3">
+                    <div class="card-content white-text">
+                        <span class="card-title">{{ object.name }}</span>
+                        <p><i><a
+                                href="{% url 'predictions:season_detail' object.season.pk %} ">Сезон {{ object.season.name }}</a></i>
+                        </p>
+                        <p>{{ object.info }}</p>
+                        <p>Начало: {{ object.started_at|timezone:"Europe/Moscow" }} (мск)</p>
+                        {% if object.is_active %}
+                            <p><i>Идёт</i></p>
+                        {% else %}
+                            <p><i>Завершён</i></p>
+                        {% endif %}
+                    </div>
+                    <div class="card-action">
+                        <a href="{% url 'predictions:tournament_detail' object.pk %}">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
 {% endblock content %}

@@ -6,6 +6,7 @@ body {
     min-height: 100%;
     display: grid;
     grid-template-rows: auto 1fr auto;
+    background-color: #e3f2fd;
 }
 
 details {
@@ -14,4 +15,12 @@ details {
 
 details summary {
     cursor: pointer;
+}
+
+.card-content a {
+    color: #ffab40;
+}
+
+.card-content a:hover {
+    color: #ffd8a6;
 }
