@@ -169,6 +169,7 @@ class RawPredictionResource(BaseAbstractResource):
 class BaseAbstractAdmin(ActiveFilterAdminMixin, admin.ModelAdmin):
     list_display = ("__str__", "id", "is_active")
     list_display_links = ("__str__", "id")
+    list_editable = ("is_active", )
     search_fields = ("id", "name", "info")
     fields = ("id", "name", "info", "is_active", "created_at", "updated_at")
     readonly_fields = ("id", "created_at", "updated_at")
